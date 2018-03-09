@@ -12,7 +12,9 @@ RUN apt-get update \
         && cd /tmp/ && tar xjvf bwa-${bwa_version}.tar.bz2 \
         && cd /tmp/bwa-${bwa_version} \
         && make \
-        && mv /tmp/bwa-${bwa_version}/bwa /usr/bin
+        && mv /tmp/bwa-${bwa_version}/bwa /usr/bin \
+        && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version}
+
 
 WORKDIR /working
 
