@@ -12,7 +12,6 @@ def main():
     args = parser.parse_args()
     samples_directories = []
     empty_directories = []
-    print args.sconsdir
     for f in os.listdir(os.getcwd()):
         if os.path.isdir(f):
             os.chdir(f)
