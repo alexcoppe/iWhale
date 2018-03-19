@@ -1,5 +1,6 @@
 import os
 
+
 vars = Variables("config.py")
 #TOCHANGE
 vars.Add('referenceDir', 'The path to the directory containing the reference file',
@@ -27,6 +28,8 @@ sortSamCMD = "java -jar {} SortSam INPUT=/dev/stdin OUTPUT=$TARGET SORT_ORDER=co
 
 buildBamCMD = bwaCMD + sortSamCMD
 
-bwa = env.Command(["01_{}.bam".format(sampleName)],[],buildBamCMD)
+bam = env.Command(["01_{}.bam".format(sampleName)],[],buildBamCMD)
 
+pcrRemovalCMD = "java -Xmx4g -jar {} MarkDuplicates I=$SOURCE O=$TARGET M=metrics.txt REMOVE_DUPLICATES=true CREATE_INDEX=true".format(picard)
+pcrRemoval = env.Command(["02_mapping-rmdup.bam"], [bam], pcrRemovalCMD)
 
