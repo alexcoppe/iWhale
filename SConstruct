@@ -6,7 +6,6 @@ import os
 ## - GRChxx.xx.fa.fai
 ## - GRChxx.xx.dict
 ## - dbSNP_vxxx_xxxx_noCHR.vcf - use remove_chr.py on vcf downloaded from dbSNP FTP site 
-## - CosmicCodingMuts_vxx.vcf
 ## - Bed file containing exome captured regions - *.bed
 ## - config.py - python file containing variables to input in the pipeline. All variables must be declared before
 #running the pipeline
@@ -14,6 +13,7 @@ import os
 ## - bwa - for alignment
 ## - picard.jar - for bam processing
 ## - GenomeAnalysisTK.jar - for indel realignment
+## - gatk - GATK4 for read filtering and base recalibration
 ## - Bedtools - for coverage statistics computation
 
 #########################
@@ -88,7 +88,7 @@ filteringBam = env.Command(["03_mapping-rmdup-cleaned.bam"],[pcrRemoval],filteri
 
 #Table of putative indels
 
-putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator -R {} -o $TARGET  -I $SOURCE".format(gatk3,reference)
+putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator -R {} -o $TARGET  -I $SOURCE -nt {}".format(gatk3,reference,processors)
 putativeIndelsTable = env.Command(["04_realigning.intervals"], [filteringBam], putativeIndelsTableCMD)
 
 #Local realignment around indels
