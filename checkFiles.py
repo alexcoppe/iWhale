@@ -31,7 +31,8 @@ def main():
             os.chdir(f)
             if args.pairedend == True:
                 if not (os.path.isfile("1.fastq.gz") and os.path.isfile("2.fastq.gz")):
-                    empty_directories.append(f)
+                    if not f == "Variants":
+                        empty_directories.append(f)
                 else:
                     samples_directories.append(f)
                 os.chdir("..")
