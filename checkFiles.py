@@ -44,11 +44,18 @@ def main():
     else:
         for directory in samples_directories:
             os.chdir(directory)
-            os.system("scons -f {}/SConstruct".format(args.sconsdir))
+#            os.system("scons -f {}/SConstruct".format(args.sconsdir))
             os.chdir("..")
         goodSampleMatches = checkTumorControlMatches("tumor_control_samples.txt")
         if goodSampleMatches == True:
-            pass
+            os.system("mkdir Variants")
+            os.system("mkdir Variants/Mutect Variants/Mutect2 Variants/Strelka2")
+            pairFile = open("tumor_control_samples.txt")
+            for pair in pairFile:
+                tumor,normal = pair.split(" ")[0],pair.split(" ")[1]
+                pairName = tumor+"_"+normal.strip()
+                os.system("mkdir Variants/Mutect/{0} Variants/Mutect2/{0} Variants/Strelka2/{0}".format(pairName))
+                os.system("scons -f {}/Scons_variant_calling tumor={} normal={}".format(args.sconsdir,tumor,normal))
         else:
             sys.stderr.write(goodSampleMatches+"\n")
             sys.exit(1)

@@ -1,0 +1,52 @@
+import os
+
+#### Quick documentation ####
+##Files needed by pipeline:
+## - GRChxx.xx.fa
+## - GRChxx.xx.fa.fai
+## - GRChxx.xx.dict
+## - dbSNP_vxxx_xxxx_noCHR.vcf - use remove_chr.py on vcf downloaded from dbSNP FTP site
+## - Bed file containing exome captured regions - *.bed
+## - config.py - python file containing variables to input in the pipeline. All variables must be declared before
+#running the pipeline
+##Program needed by pipeline:
+## - picard.jar -
+## - GenomeAnalysisTK.jar -
+## - gatk - GATK4 for MuTect2
+
+#########################
+##### SCons Settings ####
+#########################
+
+vars = Variables("config.py")
+
+vars.Add('reference', 'The path to the directory containing the reference file',
+"/genome/reference.fa")
+vars.Add('processors', 'Number of CPUs to be used', "2")
+vars.Add('dbsnpVCF','The path to dbSNP VCF',"/dbsnp/dbSNP_v150_20170710_noCHR.vcf.gz")
+vars.Add('exomeRegions',"The path to bed file containing exome regions","/bed/S07604514_Padded_noChr.bed")
+vars.Add('tumor',"Tumor sample","")
+vars.Add('normal',"Normal sample","")
+
+env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
+env.AppendENVPath('PATH', os.getcwd())
+Decider('timestamp-newer')
+
+####################
+##### Arguments ####
+####################
+
+reference = ARGUMENTS.get("reference", env["reference"])
+
+processors = ARGUMENTS.get("processors", env["processors"])
+
+dbsnpVCF = ARGUMENTS.get("dbsnpVCF",env["dbsnpVCF"])
+
+exomeRegions = ARGUMENTS.get("exomeRegions",env["exomeRegions"])
+
+tumor = ARGUMENTS.get("tumor",env["tumor"])
+
+normal = ARGUMENTS.get("normal",env["normal"])
+
+print tumor,normal
+
