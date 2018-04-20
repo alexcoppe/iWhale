@@ -18,15 +18,23 @@ import os
 ##### SCons Settings ####
 #########################
 
-vars = Variables("config.py")
+vars = Variables("/home/andrea/Andrea/Script/Docker/wes_analysis/config.py")
 
 vars.Add('reference', 'The path to the directory containing the reference file',
 "/genome/reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
 vars.Add('dbsnpVCF','The path to dbSNP VCF',"/dbsnp/dbSNP_v150_20170710_noCHR.vcf.gz")
+vars.Add('cosmic','The path to Cosmic VCF',"/cosmic/CosmicCodingMuts_v82.vcf")
 vars.Add('exomeRegions',"The path to bed file containing exome regions","/bed/S07604514_Padded_noChr.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
+vars.Add('mutect','The path to mutect',"")
+vars.Add('contamination','Computation of predicted contamination in tumor sample by CalculateContamination of GATK4 (y/n)',"n")
+vars.Add('gatk4','The path to GATK4',"/tmp/gatk4/gatk")
+#vars.Add('javaOptions','Options to run java',"4")
+vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
+vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
+vars.Add('gnomadVCF',"Path of gnomad.exomes.rx.x.x.sites.pass.vcf","")
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
 env.AppendENVPath('PATH', os.getcwd())
@@ -42,11 +50,38 @@ processors = ARGUMENTS.get("processors", env["processors"])
 
 dbsnpVCF = ARGUMENTS.get("dbsnpVCF",env["dbsnpVCF"])
 
+cosmic = ARGUMENTS.get("cosmic",env["cosmic"])
+
 exomeRegions = ARGUMENTS.get("exomeRegions",env["exomeRegions"])
 
 tumor = ARGUMENTS.get("tumor",env["tumor"])
 
 normal = ARGUMENTS.get("normal",env["normal"])
 
-print tumor,normal
+mutect = ARGUMENTS.get("mutect",env["mutect"])
+
+contamination = ARGUMENTS.get("contamination",env["contamination"])
+
+gatk4 = ARGUMENTS.get("gatk4",env["gatk4"])
+
+#javaOptions = ARGUMENTS.get("javaOptions",env["javaOptions"])
+
+#javaOptions = "-Xmx"+str(javaOptions)+"g"
+
+maxPopulationAlleleFrequency = ARGUMENTS.get("maxPopulationAlleleFrequency",env["maxPopulationAlleleFrequency"])
+
+minPopulationAlleleFrequency = ARGUMENTS.get("minPopulationAlleleFrequency",env["minPopulationAlleleFrequency"])
+
+gnomadVCF = ARGUMENTS.get("gnomadVCF",env["gnomadVCF"])
+
+############################################
+#### Calculate contamination with GATK4 ####
+############################################
+
+if contamination == "y" or contamination == "yes":
+    getPileupSummariesCMD = "${SOURCES[0]} GetPileupSummaries -I ${SOURCES[1]}/07_recalibrated.bam -L ${SOURCES[2]} -V ${SOURCES[3]} -O Variants/Mutect2/${SOURCES[1]}_${SOURCES[4]}/00_pileups.table" + " -max-af {} -min-af {}".format(maxPopulationAlleleFrequency,minPopulationAlleleFrequency)
+    getPileupSummaries = env.Command(["Variants/Mutect2/{}_{}/00_pileups.table".format(tumor,normal)],[gatk4,tumor,exomeRegions,gnomadVCF,normal],getPileupSummariesCMD)
+
+    calculateContaminationCMD = "${SOURCES[0]} CalculateContamination -I ${SOURCES[1]} -O $TARGET"
+    calculateContamination = env.Command(["Variants/Mutect2/{}_{}/00_contamination.table".format(tumor,normal)],[gatk4,getPileupSummaries],calculateContaminationCMD)
 
