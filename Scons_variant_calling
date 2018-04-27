@@ -18,14 +18,13 @@ import os
 ##### SCons Settings ####
 #########################
 
-vars = Variables("/home/andrea/Andrea/Script/Docker/wes_analysis/config.py")
+vars = Variables("/working/config.py")
 
-vars.Add('reference', 'The path to the directory containing the reference file',
-"/genome/reference.fa")
+vars.Add('reference', 'The genome reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
-vars.Add('dbsnpVCF','The path to dbSNP VCF',"/dbsnp/dbSNP_v150_20170710_noCHR.vcf.gz")
-vars.Add('cosmic','The path to Cosmic VCF',"/cosmic/CosmicCodingMuts_v82.vcf")
-vars.Add('exomeRegions',"The path to bed file containing exome regions","/bed/small.bed")
+vars.Add('dbsnpVCF','The dbSNP VCF',"dbsnp.vcf.gz")
+vars.Add('cosmic','The Cosmic VCF',"cosmic.vcf")
+vars.Add('exomeRegions',"The bed file containing exome regions","small.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
 vars.Add('mutect','The path to mutect',"/tmp/mutect-1.1.7.jar")
@@ -34,7 +33,7 @@ vars.Add('gatk4','The path to GATK4',"/tmp/gatk4/gatk")
 vars.Add('javaOptions','Options to run java',"4")
 vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
 vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
-vars.Add('gnomadVCF',"Path of gnomad.exomes.rx.x.x.sites.pass.vcf","/gnomad/gnomAD_lite_docker.vcf")
+vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","gnomad.vcf")
 vars.Add('variantCallers',"Variant callers to be used (mutect,mutect2,strelka2)","mutect,mutect2,strelka2")
 
 
@@ -79,12 +78,13 @@ gnomadVCF = ARGUMENTS.get("gnomadVCF",env["gnomadVCF"])
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
 
+
 ############################################
 #### Calculate contamination with GATK4 ####
 ############################################
 
 if contamination == "y" or contamination == "yes":
-    getPileupSummariesCMD = "${SOURCES[0]} GetPileupSummaries -I ${SOURCES[1]}/07_recalibrated.bam -L ${SOURCES[2]} -V ${SOURCES[3]} -O Variants/Mutect2/${SOURCES[1]}_${SOURCES[4]}/00_pileups.table" + " -max-af {} -min-af {}".format(maxPopulationAlleleFrequency,minPopulationAlleleFrequency)
+    getPileupSummariesCMD = "${SOURCES[0]} GetPileupSummaries -I ${SOURCES[1]}/07_recalibrated.bam -L /bed/${SOURCES[2]} -V /gnomad/${SOURCES[3]} -O Variants/Mutect2/${SOURCES[1]}_${SOURCES[4]}/00_pileups.table" + " -max-af {} -min-af {}".format(maxPopulationAlleleFrequency,minPopulationAlleleFrequency)
     getPileupSummaries = env.Command(["Variants/Mutect2/{}_{}/00_pileups.table".format(tumor,normal)],[gatk4,tumor,exomeRegions,gnomadVCF,normal],getPileupSummariesCMD)
 
     calculateContaminationCMD = "${SOURCES[0]} CalculateContamination -I ${SOURCES[1]} -O $TARGET"
@@ -95,7 +95,7 @@ if contamination == "y" or contamination == "yes":
 #####################################
 
 if "mutect" in variantCallersList:
-    muTectCMD = "/home/andrea/Andrea/Script/Docker/wes_analysis/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
+    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence /genome/${SOURCES[1]} --dbsnp /dbsnp/${SOURCES[2]} --cosmic /cosmic/${SOURCES[3]} --intervals /bed/${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
     muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor],muTectCMD)
 
     #passMuTectCMD = "grep -v REJECT ${SOURCES[0]} > $TARGET"
