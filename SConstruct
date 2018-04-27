@@ -29,7 +29,7 @@ vars.Add('picard','The path to picard.jar',"/tmp/picard.jar")
 vars.Add('gatk4','The path to gatk4',"/tmp/gatk4/gatk")
 vars.Add('gatk3','The path to gatk3',"/tmp/gatk3/GenomeAnalysisTK.jar")
 vars.Add('dbsnpVCF','The path to dbSNP VCF',"/dbsnp/dbSNP_v150_20170710_noCHR.vcf.gz")
-vars.Add('exomeRegions',"The path to bed file containing exome regions","/bed/S07604514_Padded_noChr.bed")
+vars.Add('exomeRegions',"The path to bed file containing exome regions","/bed/small.bed")
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
 env.AppendENVPath('PATH', os.getcwd())
@@ -59,13 +59,13 @@ sampleName = os.path.basename(os.getcwd())
 ##### Alignment of the reads with bwa and sorting with picard ####
 ##################################################################
 
-bwaCMD = "bwa mem -M -R \"@RG\\tID:{}\\tLB:{}\\tSM:{}\\tPL:ILLUMINA\"  -t {} {}".format(sampleName,"exome",sampleName, processors, reference) + " <(zcat 1.fastq.gz) <(zcat 2.fastq.gz) | "
+bwaCMD = "bwa mem -M -R \"@RG\\tID:{}\\tLB:{}\\tSM:{}\\tPL:ILLUMINA\"  -t {} {}".format(sampleName,"exome",sampleName, processors, reference) + " <(zcat ${SOURCES[0]}) <(zcat ${SOURCES[1]}) | "
 
 sortSamCMD = "java -jar {} SortSam INPUT=/dev/stdin OUTPUT=$TARGET SORT_ORDER=coordinate CREATE_INDEX=true".format(picard)
 
 buildBamCMD = bwaCMD + sortSamCMD
 
-bam = env.Command(["01_{}.bam".format(sampleName)],[],buildBamCMD)
+bam = env.Command(["01_{}.bam".format(sampleName)],["1.fastq.gz","2.fastq.gz"],buildBamCMD)
 
 ################################################
 ##### Removal of PCR duplicates with Picard ####
