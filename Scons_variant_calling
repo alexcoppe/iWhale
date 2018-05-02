@@ -46,14 +46,18 @@ Decider('timestamp-newer')
 ####################
 
 reference = ARGUMENTS.get("reference", env["reference"])
+reference = "/genome/" + reference
 
 processors = ARGUMENTS.get("processors", env["processors"])
 
 dbsnpVCF = ARGUMENTS.get("dbsnpVCF",env["dbsnpVCF"])
+dbsnpVCF = "/dbsnp/" + dbsnpVCF
 
 cosmic = ARGUMENTS.get("cosmic",env["cosmic"])
+cosmic = "/cosmic/" + cosmic
 
 exomeRegions = ARGUMENTS.get("exomeRegions",env["exomeRegions"])
+exomeRegions = "/bed/" + exomeRegions
 
 tumor = ARGUMENTS.get("tumor",env["tumor"])
 
@@ -74,6 +78,7 @@ maxPopulationAlleleFrequency = ARGUMENTS.get("maxPopulationAlleleFrequency",env[
 minPopulationAlleleFrequency = ARGUMENTS.get("minPopulationAlleleFrequency",env["minPopulationAlleleFrequency"])
 
 gnomadVCF = ARGUMENTS.get("gnomadVCF",env["gnomadVCF"])
+gnomadVCF = "/gnomad/" + gnomadVCF
 
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
@@ -84,7 +89,7 @@ variantCallersList = variantCallers.split(",")
 ############################################
 
 if contamination == "y" or contamination == "yes":
-    getPileupSummariesCMD = "${SOURCES[0]} GetPileupSummaries -I ${SOURCES[1]}/07_recalibrated.bam -L /bed/${SOURCES[2]} -V /gnomad/${SOURCES[3]} -O Variants/Mutect2/${SOURCES[1]}_${SOURCES[4]}/00_pileups.table" + " -max-af {} -min-af {}".format(maxPopulationAlleleFrequency,minPopulationAlleleFrequency)
+    getPileupSummariesCMD = "${SOURCES[0]} GetPileupSummaries -I ${SOURCES[1]}/07_recalibrated.bam -L ${SOURCES[2]} -V ${SOURCES[3]} -O Variants/Mutect2/${SOURCES[1]}_${SOURCES[4]}/00_pileups.table" + " -max-af {} -min-af {}".format(maxPopulationAlleleFrequency,minPopulationAlleleFrequency)
     getPileupSummaries = env.Command(["Variants/Mutect2/{}_{}/00_pileups.table".format(tumor,normal)],[gatk4,tumor,exomeRegions,gnomadVCF,normal],getPileupSummariesCMD)
 
     calculateContaminationCMD = "${SOURCES[0]} CalculateContamination -I ${SOURCES[1]} -O $TARGET"
@@ -95,11 +100,8 @@ if contamination == "y" or contamination == "yes":
 #####################################
 
 if "mutect" in variantCallersList:
-    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence /genome/${SOURCES[1]} --dbsnp /dbsnp/${SOURCES[2]} --cosmic /cosmic/${SOURCES[3]} --intervals /bed/${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
+    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
     muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor],muTectCMD)
 
-    #passMuTectCMD = "grep -v REJECT ${SOURCES[0]} > $TARGET"
-    #passMuTect = env.Command(["{}_mutect_pass.vcf".format(tumorName)],["{}_mutect.vcf".format(tumorName),muTect],passMuTectCMD)
 
-    #combiningVariantsDict.setdefault("mutect",passMuTect)
 
