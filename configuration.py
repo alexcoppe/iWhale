@@ -20,7 +20,7 @@ exomeRegions = "small.bed"
 
 gnomadVCF = "gnomAD_lite_docker.vcf"
 
-contamination = "n"
+contamination = "y"
 
 javaOptions = 4
 
