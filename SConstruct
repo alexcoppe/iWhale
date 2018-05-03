@@ -20,7 +20,7 @@ import os
 ##### SCons Settings ####
 #########################
 
-vars = Variables("/working/config.py")
+vars = Variables("/working/configuration.py")
 
 vars.Add('reference', 'The path to the directory containing the reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")

@@ -18,7 +18,7 @@ import os
 ##### SCons Settings ####
 #########################
 
-vars = Variables("/working/config.py")
+vars = Variables("/working/configuration.py")
 
 vars.Add('reference', 'The genome reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
@@ -103,5 +103,26 @@ if "mutect" in variantCallersList:
     muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
     muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor],muTectCMD)
 
+#######################################
+##### Variant Calling with MuTect2 ####
+#######################################
+
+if "mutect2" in variantCallersList: 
+    muTect2CMD = "${SOURCES[0]} Mutect2 -R ${SOURCES[1]} -I ${SOURCES[2]}/07_recalibrated.bam -tumor ${SOURCES[2]} -I ${SOURCES[3]}/07_recalibrated.bam -normal ${SOURCES[3]} -L ${SOURCES[4]} -O $TARGET --germline-resource ${SOURCES[5]} --dont-use-soft-clipped-bases --output-mode EMIT_VARIANTS_ONLY -bamout Variants/Mutect2/${SOURCES[2]}_${SOURCES[3]}/01_mutect2.bam"+" --native-pair-hmm-threads {}".format(processors)
+    muTect2 = env.Command(["Variants/Mutect2/{}_{}/01.vcf".format(tumor,normal)],[gatk4,reference,tumor,normal,exomeRegions,gnomadVCF],muTect2CMD)
+
+    if (contamination == "y" or contamination == "yes"):
+        filterMutectCallsCMD = "${SOURCES[0]} FilterMutectCalls -V ${SOURCES[1]} -contamination-table ${SOURCES[2]} -O $TARGET"
+        filterMutectCalls = env.Command(["Variants/Mutect2/{}_{}/02_mutect2_filtered.vcf".format(tumor,normal)],[gatk4,muTect2,calculateContamination],filterMutectCallsCMD)
+                        
+        selectVariantsMutect2CMD = "${SOURCES[0]} SelectVariants -R ${SOURCES[1]} -V ${SOURCES[2]} -O $TARGET --exclude-filtered"
+        selectVariantsMutect2 = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_pass.vcf".format(tumor,normal)],[gatk4,reference,filterMutectCalls],selectVariantsMutect2CMD)
+
+    else:
+        filterMutectCallsCMD = "${SOURCES[0]} FilterMutectCalls -V ${SOURCES[1]} -O $TARGET"
+        filterMutectCalls = env.Command(["Variants/Mutect2/{}_{}/02_mutect2_filtered.vcf".format(tumor,normal)],[gatk4,muTect2],filterMutectCallsCMD)
+
+        selectVariantsMutect2CMD = "${SOURCES[0]} SelectVariants -R ${SOURCES[1]} -V ${SOURCES[2]} -O $TARGET --exclude-filtered"
+        selectVariantsMutect2 = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_pass.vcf".format(tumor,normal)],[gatk4,reference,filterMutectCalls],selectVariantsMutect2CMD)
 
 
