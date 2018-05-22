@@ -129,21 +129,21 @@ if "mutect2" in variantCallersList:
 #### Variant Calling with Strelka2 ####
 #######################################
 
-if "strelka2" in variantCallersList:
-    makeBedIndexCMD = "/tmp/strelka/libexec/bgzip -c ${SOURCE} > ${TARGET} && /tmp/strelka/libexec/tabix -fp bed ${TARGET}"
-#    makeBedIndexCMD = "/tmp/strelka/libexec/bgzip -c {}".format(exomeRegions) + " > ${TARGET} && /tmp/strelka/libexec/tabix -fp bed ${TARGET}"
-    #makeBedIndex = env.Command(["{}.gz".format(exomeRegions)],[exomeRegions],makeBedIndexCMD)
-    makeBedIndex = env.Command(["/bed/small.bed.gz"],[exomeRegions],makeBedIndexCMD)
 
-#    strelka2configurationCMD = "python /tmp/strelka/bin/configureStrelkaSomaticWorkflow.py --normalBam ${SOURCES[0]}/07_recalibrated.bam --tumorBam ${SOURCES[1]}/07_recalibrated.bam --referenceFasta ${SOURCES[2]} --runDir $TARGET --callRegions ${SOURCES[3]}.gz --exome"
-#    strelka2configuration = env.Command(["Variants/Strelka2/{}_{}/strelkaWorkflow".format(tumor,normal)],[normal,tumor,reference,exomeRegions],strelka2configurationCMD)
-#    strelka2runCMD = "python $SOURCE/runWorkflow.py -m local"+" -j {}".format(threads)+" > $TARGET"
- #   strelka2run = env.Command([".{}.strelka2.done.txt".format(tumorName)],[strelka2configuration],strelka2runCMD)
+if "strelka2" in variantCallersList:
+
+    strelka2configurationCMD = "python /tmp/strelka/bin/configureStrelkaSomaticWorkflow.py --normalBam ${SOURCES[0]}/07_recalibrated.bam --tumorBam ${SOURCES[1]}/07_recalibrated.bam --referenceFasta ${SOURCES[2]} --runDir $TARGET --callRegions ${SOURCES[3]}.gz --exome"
+    strelka2configuration = env.Command(["Variants/Strelka2/{}_{}/strelkaWorkflow".format(tumor,normal)],[normal,tumor,reference,exomeRegions],strelka2configurationCMD)
+
+    strelka2runCMD = "python $SOURCE/runWorkflow.py -m local"+" -j {}".format(processors)+" > $TARGET"
+    strelka2run = env.Command(["Variants/Strelka2/{}_{}/00_strelka2.done.txt".format(tumor,normal)],[strelka2configuration],strelka2runCMD)
     
-  #  selectVariantsStrelka2snvsCMD = "${SOURCES[0]}"+" --javaOptions \"{}\"".format(javaOptions)+" SelectVariants -R ${SOURCES[1]}"+" -V {}_strelka2/results/variants/somatic.snvs.vcf.gz".format(tumorName)+" -O $TARGET --excludeFiltered"
-#    selectVariantsStrelka2snvs = env.Command(["{}_strelka2_snvs_pass.vcf".format(tumorName)],[gatk4,reference,strelka2run],selectVariantsStrelka2snvsCMD)
-#    selectVariantsStrelka2indelsCMD = "${SOURCES[0]}"+" --javaOptions \"{}\"".format(javaOptions)+" SelectVariants -R ${SOURCES[1]}"+" -V {}_strelka2/results/variants/somatic.indels.vcf.gz".format(tumorName)+" -O $TARGET --excludeFiltered"
-#    selectVariantsStrelka2indels = env.Command(["{}_strelka2_indels_pass.vcf".format(tumorName)],[gatk4,reference,selectVariantsStrelka2snvs],selectVariantsStrelka2indelsCMD)
+    selectVariantsStrelka2snvsCMD = "${SOURCES[0]}"+" SelectVariants -R ${SOURCES[1]}"+" -V Variants/Strelka2/{}_{}/strelkaWorkflow/results/variants/somatic.snvs.vcf.gz".format(tumor,normal)+" -O $TARGET --exclude-filtered"
+    selectVariantsStrelka2snvs = env.Command(["Variants/Strelka2/{}_{}/01_strelka2_snvs_pass.vcf".format(tumor,normal)],[gatk4,reference,strelka2run],selectVariantsStrelka2snvsCMD)
+
+
+    selectVariantsStrelka2indelsCMD = "${SOURCES[0]}"+" SelectVariants -R ${SOURCES[1]}"+" -V Variants/Strelka2/{}_{}/strelkaWorkflow/results/variants/somatic.indels.vcf.gz".format(tumor,normal)+" -O $TARGET --exclude-filtered"
+    selectVariantsStrelka2indels = env.Command(["Variants/Strelka2/{}_{}/02_strelka2_indels_pass.vcf".format(tumor,normal)],[gatk4,reference,selectVariantsStrelka2snvs],selectVariantsStrelka2indelsCMD)
 
  #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
 #    updateGTStrelka2Snp = env.Command(["{}_strelka2_gt_snvs.vcf".format(tumorName)],[selectVariantsStrelka2snvs],updateGTStrelka2SnpCMD)
