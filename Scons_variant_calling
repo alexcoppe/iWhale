@@ -34,7 +34,13 @@ vars.Add('javaOptions','Options to run java',"4")
 vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
 vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
 vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","gnomad.vcf")
-vars.Add('variantCallers',"Variant callers to be used (mutect,mutect2,strelka2)","mutect,mutect2,strelka2")
+vars.Add('variantCallers',"Variant callers to be used (mutect,mutect2,strelka2)","mutect,mutect2,strelka2,varscan")
+
+
+# VarScan Parameters
+vars.Add('varScanMinCoverage', 'VarScan minimum read depeh at a position to make a call [10]', "10")
+vars.Add('varScanPvalue', "VarScan default p-value threshold for calling variants [1e-01]", "0.1")
+vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]", "0.2")
 
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
@@ -82,6 +88,11 @@ gnomadVCF = "/gnomad/" + gnomadVCF
 
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
+
+# VarScan Parameters
+varScanMinCoverage = ARGUMENTS.get("varScanMinCoverage", env["varScanMinCoverage"])
+varScanPvalue = ARGUMENTS.get("varScanPvalue", env["varScanPvalue"])
+varScanMinVarFreq = ARGUMENTS.get("varScanMinVarFreq", env["varScanMinVarFreq"])
 
 
 ############################################
@@ -153,4 +164,15 @@ if "strelka2" in variantCallersList:
 
    # combineVariantsStrelka2CMD = "{} -jar".format(java8)+" ${SOURCES[0]} -T CombineVariants -R ${SOURCES[1]}"+" --variant:strelka2_snv ${SOURCES[2]} --variant:strelka2_indel ${SOURCES[3]} -o $TARGET -genotypeMergeOptions PRIORITIZE -priority strelka2_snv,strelka2_indel"
    # combineVariantsStrelka2 = env.Command(["{}_strelka2_pass.vcf".format(tumorName)],[gatk3,reference,updateGTStrelka2Snp,updateGTStrelka2Indel],combineVariantsStrelka2CMD)
+
+if "varscan" in variantCallersList:
+
+    varscanCMD = "java -jar /tmp/VarScan.jar  somatic  <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[1]}/07_recalibrated.bam ) <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[2]}/07_recalibrated.bam) " + " Variants/VarScan/{}_{}/01_varscan --min-coverage 10 --somatic-p-value 0.05 --p-value 0.99 --min-var-freq 0.02".format(tumor,normal)
+    varscan = env.Command(["Variants/VarScan/{}_{}/01_varscan.indel".format(tumor,normal), "Variants/VarScan/{}_{}/01_varscan.snp".format(tumor,normal)], [reference,normal,tumor], varscanCMD)
+
+    filterVarScanSnpsCMD = "java -jar /tmp/VarScan.jar somaticFilter Variants/VarScan/{}_{}/01_varscan.snp   --min-coverage {} --pvalue {} --min-var-freq {} --output-file Variants/VarScan/{}_{}/02_tmp && cp Variants/VarScan/{}_{}/02_tmp ".format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + "${TARGET}"
+    filterVarScanSnps = env.Command(["Variants/VarScan/{}_{}/02_varscan_filtered.snp".format(tumor,normal)], [reference,normal,tumor], filterVarScanSnpsCMD)
+
+
+
 

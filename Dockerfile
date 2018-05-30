@@ -6,6 +6,7 @@ ENV gatk4_version 4.0.2.1
 ENV gatk3_version 3.8-1
 ENV PATH "$PATH:/tmp/jre1.8.0_161/bin/"
 ENV strelka2_version 2.9.2
+ENV varscan_version 2.4.2
 
 ADD  http://downloads.sourceforge.net/project/bio-bwa/bwa-${bwa_version}.tar.bz2 /tmp/
 ADD https://github.com/broadinstitute/picard/releases/download/${picard_version}/picard.jar /tmp/
@@ -15,6 +16,7 @@ ADD "https://software.broadinstitute.org/gatk/download/auth?package=GATK-archive
 ADD https://software.broadinstitute.org/gatk/download/auth?package=M1 /tmp/mutect.zip
 ADD http://compgen.bio.unipd.it/downloads/java-7-oracle.tar.gz /tmp/java7.tar.gz
 ADD https://github.com/Illumina/strelka/releases/download/v${strelka2_version}/strelka-${strelka2_version}.release_src.tar.bz2 /tmp/
+ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/VarScan.v${varscan_version}.jar /tmp/
 
 COPY checkFiles.py /usr/bin/checkFiles.py
 COPY SConstruct /tmp/
@@ -23,7 +25,7 @@ COPY Scons_variant_calling /tmp/
 
 RUN apt-get update \
     && apt-get install -y apt-utils \
-    && apt-get install -y python scons bzip2 make gcc zlib1g-dev unzip bedtools g++ \
+    && apt-get install -y python scons bzip2 make gcc zlib1g-dev unzip bedtools g++ samtools  \
     && cd /tmp/ && tar xjvf bwa-${bwa_version}.tar.bz2 \
     && cd /tmp/bwa-${bwa_version} \
     && make \
@@ -39,6 +41,7 @@ RUN apt-get update \
     && mkdir build && cd build \
     && ../strelka-${strelka2_version}.release_src/configure --jobs=4 --prefix=/tmp/strelka \
     && make -j4 install \
+    && cd /tmp/ && mv VarScan.v${varscan_version}.jar VarScan.jar \
     && cd /tmp/ \
     && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip \
     && rm /tmp/java7.tar.gz && rm -rf strelka-${strelka2_version}.release_src.tar.bz2 strelka-${strelka2_version}.release_src

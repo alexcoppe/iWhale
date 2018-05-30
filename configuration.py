@@ -30,4 +30,14 @@ minPopulationAlleleFrequency = 0
 
 #gnomadVCF = "/home/andrea/Andrea/Script/Docker/wes_analysis/test/annotation/gnomAD/gnomAD_lite_docker.vcf"
 
-variantCallers = "mutect,mutect2,strelka2"
+variantCallers = "mutect,mutect2,strelka2,varscan"
+
+
+
+############## VarScan parameters ###############
+# VarScan --min-coverage
+varScanMinCoverage = 10
+# VarScan --pvalue
+varScanPvalue = 0.05
+# Varscan --min-var-freq 0.02 
+varScanMinVarFreq = 0.02
