@@ -18,7 +18,6 @@ ADD http://compgen.bio.unipd.it/downloads/java-7-oracle.tar.gz /tmp/java7.tar.gz
 ADD https://github.com/Illumina/strelka/releases/download/v${strelka2_version}/strelka-${strelka2_version}.release_src.tar.bz2 /tmp/
 ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/VarScan.v${varscan_version}.jar /tmp/
 ADD https://raw.githubusercontent.com/alexcoppe/varscan_accessories/master/vs_format_converter.py /tmp/
-ADD https://raw.githubusercontent.com/alexcoppe/varscan_accessories/master/vs_indel_to_annovar.py /tmp/
 
 COPY checkFiles.py /usr/bin/checkFiles.py
 COPY SConstruct /tmp/
