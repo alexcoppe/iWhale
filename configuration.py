@@ -32,7 +32,8 @@ minPopulationAlleleFrequency = 0
 
 variantCallers = "mutect,mutect2,strelka2,varscan"
 
-
+#### MuTect2 parameters ####
+mutect2Parameters = "--dont-use-soft-clipped-bases --output-mode EMIT_VARIANTS_ONLY"
 
 ############## VarScan parameters ###############
 # VarScan --min-coverage
