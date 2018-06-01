@@ -46,7 +46,7 @@ def main():
     else:
         for directory in samples_directories:
             os.chdir(directory)
-            os.system("scons -f {}/SConstruct".format(args.sconsdir))
+            os.system("scons -j {} -f {}/SConstruct".format(args.processors,args.sconsdir))
             os.chdir("..")
         goodSampleMatches = checkTumorControlMatches("tumor_control_samples.txt")
         if goodSampleMatches == True:
