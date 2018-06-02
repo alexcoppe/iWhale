@@ -46,6 +46,11 @@ vars.Add('varScanPvalue', "VarScan default p-value threshold for calling variant
 vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]", "0.2")
 
 
+# snpEff Parameters
+vars.Add("snpeffDir", "SnpEFF directory", "/working/snpeffData")
+vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
+
+
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
 env.AppendENVPath('PATH', os.getcwd())
 Decider('timestamp-newer')
@@ -99,6 +104,10 @@ mutect2Parameters = ARGUMENTS.get("mutect2Parameters",env["mutect2Parameters"])
 varScanMinCoverage = ARGUMENTS.get("varScanMinCoverage", env["varScanMinCoverage"])
 varScanPvalue = ARGUMENTS.get("varScanPvalue", env["varScanPvalue"])
 varScanMinVarFreq = ARGUMENTS.get("varScanMinVarFreq", env["varScanMinVarFreq"])
+
+# snpEff parameters
+snpeffGenomeVersion = ARGUMENTS.get("snpeffGenomeVersion", env["snpeffGenomeVersion"])
+snpeffDir = ARGUMENTS.get("sneffDir", env["snpeffDir"])
 
 
 ############################################
@@ -162,6 +171,10 @@ if "strelka2" in variantCallersList:
     selectVariantsStrelka2indelsCMD = "${SOURCES[0]}"+" SelectVariants -R ${SOURCES[1]}"+" -V Variants/Strelka2/{}_{}/strelkaWorkflow/results/variants/somatic.indels.vcf.gz".format(tumor,normal)+" -O $TARGET --exclude-filtered"
     selectVariantsStrelka2indels = env.Command(["Variants/Strelka2/{}_{}/02_strelka2_indels_pass.vcf".format(tumor,normal)],[gatk4,reference,selectVariantsStrelka2snvs],selectVariantsStrelka2indelsCMD)
 
+    #Annotation by snpEff
+    strelka2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
+    strelka2EFF = env.Command(["Variants/Strelka2/{}_{}/03_strelka2_snvs_pass_snpeff.vcf".format(tumor,normal)],[selectVariantsStrelka2snvs], strelka2EFFCMD )
+
  #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
 #    updateGTStrelka2Snp = env.Command(["{}_strelka2_gt_snvs.vcf".format(tumorName)],[selectVariantsStrelka2snvs],updateGTStrelka2SnpCMD)
 
@@ -203,15 +216,33 @@ if "varscan" in variantCallersList:
                                     filterVarScanSnpsCMD)
 
 
-    filterVarScanIndelCMD = "java -jar /tmp/VarScan.jar somaticFilter Variants/VarScan/{}_{}/01_varscan.indel   --min-coverage {} --pvalue {} --min-var-freq {} --output-file Variants/VarScan/{}_{}/02_indel && cp Variants/VarScan/{}_{}/02_indel ".format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + "${TARGET}" + " && rm Variants/VarScan/{}_{}/02_indel".format(tumor,normal)
+
+    filterVarScanIndelCMD = 'java -jar /tmp/VarScan.jar somaticFilter ' \
+                                'Variants/VarScan/{}_{}/01_varscan.indel ' \
+                                ' --min-coverage {} ' \
+                                ' --pvalue {} ' \
+                                ' --min-var-freq {} ' \
+                                ' --output-file Variants/VarScan/{}_{}/02_indel && cp Variants/VarScan/{}_{}/02_indel '.format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + \
+                                '${TARGET}' + \
+                                ' && rm Variants/VarScan/{}_{}/02_indel'.format(tumor,normal)
+
     filterVarScanIndel = env.Command(["Variants/VarScan/{}_{}/02_varscan_indel_filtered.snp".format(tumor,normal)], [reference,normal,tumor,varscan], filterVarScanIndelCMD)
 
 
-    snpsToVCFCMD = "python /tmp/vs_format_converter.py Variants/VarScan/{}_{}/02_varscan_snp_filtered.snp > $TARGET".format(tumor,normal)
+
+    snpsToVCFCMD = 'python /tmp/vs_format_converter.py ' \
+                       'Variants/VarScan/{}_{}/02_varscan_snp_filtered.snp > $TARGET'.format(tumor,normal)
     snpsToVCF = env.Command(["Variants/VarScan/{}_{}/03_varscan_snp_filtered.vcf".format(tumor,normal)], [filterVarScanSnps], snpsToVCFCMD)
+
 
 
     snpsToIndelsCMD = 'python /tmp/vs_format_converter.py ' \
                           'Variants/VarScan/{}_{}/02_varscan_indel_filtered.snp ' \
                           '> $TARGET'.format(tumor,normal)
+
     snpsToIndels = env.Command(["Variants/VarScan/{}_{}/03_varscan_indels_filtered.vcf".format(tumor,normal)], [filterVarScanIndel], snpsToIndelsCMD)
+
+
+    #Annotation by snpEff
+    varscansnpEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
+    varscansnpEFF = env.Command(["Variants/VarScan/{}_{}/04_varscan_snp_snpeff.vcf".format(tumor,normal)],[snpsToVCF],varscansnpEFFCMD)
