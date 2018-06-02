@@ -173,11 +173,34 @@ if "strelka2" in variantCallersList:
 
 if "varscan" in variantCallersList:
 
-    varscanCMD = "java -jar /tmp/VarScan.jar  somatic  <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[1]}/07_recalibrated.bam ) <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[2]}/07_recalibrated.bam) " + " Variants/VarScan/{}_{}/01_varscan --min-coverage 10 --somatic-p-value 0.05 --p-value 0.99 --min-var-freq 0.02".format(tumor,normal)
-    varscan = env.Command(["Variants/VarScan/{}_{}/01_varscan.indel".format(tumor,normal), "Variants/VarScan/{}_{}/01_varscan.snp".format(tumor,normal)], [reference,normal,tumor], varscanCMD)
+    varscanCMD = 'java -jar /tmp/VarScan.jar  somatic ' \
+                     ' <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[1]}/07_recalibrated.bam) ' \
+                     ' <(samtools mpileup -f ${SOURCES[0]}  /working/${SOURCES[2]}/07_recalibrated.bam) ' + \
+                     ' Variants/VarScan/{}_{}/01_varscan ' \
+                     ' --min-coverage 10 ' \
+                     ' --somatic-p-value 0.05 ' \
+                     ' --p-value 0.99 ' \
+                     ' --min-var-freq 0.02'.format(tumor,normal)
 
-    filterVarScanSnpsCMD = "java -jar /tmp/VarScan.jar somaticFilter Variants/VarScan/{}_{}/01_varscan.snp   --min-coverage {} --pvalue {} --min-var-freq {} --output-file Variants/VarScan/{}_{}/02_snp && cp Variants/VarScan/{}_{}/02_snp ".format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + "${TARGET}" + " && rm Variants/VarScan/{}_{}/02_snp".format(tumor,normal)
-    filterVarScanSnps = env.Command(["Variants/VarScan/{}_{}/02_varscan_snp_filtered.snp".format(tumor,normal)], [reference,normal,tumor,varscan], filterVarScanSnpsCMD)
+    varscan = env.Command(["Variants/VarScan/{}_{}/01_varscan.indel".format(tumor,normal), \
+                           "Variants/VarScan/{}_{}/01_varscan.snp".format(tumor,normal)], \
+                          [reference,normal,tumor], \
+                          varscanCMD)
+
+
+
+    filterVarScanSnpsCMD = 'java -jar /tmp/VarScan.jar somaticFilter ' \
+                               'Variants/VarScan/{}_{}/01_varscan.snp ' \
+                               ' --min-coverage {} ' \
+                               ' --pvalue {} ' \
+                               ' --min-var-freq {} ' \
+                               ' --output-file Variants/VarScan/{}_{}/02_snp ' \
+                               ' && cp Variants/VarScan/{}_{}/02_snp '.format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + \
+                               '${TARGET}' + ' && rm Variants/VarScan/{}_{}/02_snp'.format(tumor,normal)
+
+    filterVarScanSnps = env.Command(["Variants/VarScan/{}_{}/02_varscan_snp_filtered.snp".format(tumor,normal)], \
+                                    [reference,normal,tumor,varscan], \
+                                    filterVarScanSnpsCMD)
 
 
     filterVarScanIndelCMD = "java -jar /tmp/VarScan.jar somaticFilter Variants/VarScan/{}_{}/01_varscan.indel   --min-coverage {} --pvalue {} --min-var-freq {} --output-file Variants/VarScan/{}_{}/02_indel && cp Variants/VarScan/{}_{}/02_indel ".format(tumor,normal,varScanMinCoverage,varScanPvalue,varScanMinVarFreq,tumor,normal,tumor,normal) + "${TARGET}" + " && rm Variants/VarScan/{}_{}/02_indel".format(tumor,normal)
@@ -188,5 +211,7 @@ if "varscan" in variantCallersList:
     snpsToVCF = env.Command(["Variants/VarScan/{}_{}/03_varscan_snp_filtered.vcf".format(tumor,normal)], [filterVarScanSnps], snpsToVCFCMD)
 
 
-    snpsToIndelsCMD = "python /tmp/vs_format_converter.py Variants/VarScan/{}_{}/02_varscan_indel_filtered.snp > $TARGET".format(tumor,normal)
+    snpsToIndelsCMD = 'python /tmp/vs_format_converter.py ' \
+                          'Variants/VarScan/{}_{}/02_varscan_indel_filtered.snp ' \
+                          '> $TARGET'.format(tumor,normal)
     snpsToIndels = env.Command(["Variants/VarScan/{}_{}/03_varscan_indels_filtered.vcf".format(tumor,normal)], [filterVarScanIndel], snpsToIndelsCMD)
