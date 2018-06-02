@@ -7,6 +7,7 @@ ENV gatk3_version 3.8-1
 ENV PATH "$PATH:/tmp/jre1.8.0_161/bin/"
 ENV strelka2_version 2.9.2
 ENV varscan_version 2.4.2
+ENV snpeff_version 4_3t
 
 ADD  http://downloads.sourceforge.net/project/bio-bwa/bwa-${bwa_version}.tar.bz2 /tmp/
 ADD https://github.com/broadinstitute/picard/releases/download/${picard_version}/picard.jar /tmp/
@@ -18,6 +19,8 @@ ADD http://compgen.bio.unipd.it/downloads/java-7-oracle.tar.gz /tmp/java7.tar.gz
 ADD https://github.com/Illumina/strelka/releases/download/v${strelka2_version}/strelka-${strelka2_version}.release_src.tar.bz2 /tmp/
 ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/VarScan.v${varscan_version}.jar /tmp/
 ADD https://raw.githubusercontent.com/alexcoppe/varscan_accessories/master/vs_format_converter.py /tmp/
+ADD https://downloads.sourceforge.net/project/snpeff/snpEff_v${snpeff_version}_core.zip /tmp/
+
 
 COPY checkFiles.py /usr/bin/checkFiles.py
 COPY SConstruct /tmp/
@@ -44,7 +47,8 @@ RUN apt-get update \
     && make -j4 install \
     && cd /tmp/ && mv VarScan.v${varscan_version}.jar VarScan.jar \
     && cd /tmp/ \
-    && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip \
+    && unzip snpEff_v${snpeff_version}_core.zip \
+    && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip  && rm snpEff_v${snpeff_version}_core.zip  \
     && rm /tmp/java7.tar.gz && rm -rf strelka-${strelka2_version}.release_src.tar.bz2 strelka-${strelka2_version}.release_src
 
 WORKDIR /working
