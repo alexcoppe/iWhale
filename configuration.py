@@ -24,6 +24,10 @@ contamination = "y"
 
 javaOptions = 4
 
+
+snpeffDir = "/woking/snpeffData"
+snpeffGenomeVersion = "GRCh37.75"
+
 maxPopulationAlleleFrequency = 0.2
 
 minPopulationAlleleFrequency = 0

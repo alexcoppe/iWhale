@@ -50,6 +50,9 @@ vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]
 vars.Add("snpeffDir", "SnpEFF directory", "/working/snpeffData")
 vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
 
+# ClinVAr Parameters
+vars.Add("clinvar", "Clinvar VCF file", "clinvar.vcf")
+
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
 env.AppendENVPath('PATH', os.getcwd())
@@ -72,6 +75,9 @@ cosmic = "/cosmic/" + cosmic
 
 exomeRegions = ARGUMENTS.get("exomeRegions",env["exomeRegions"])
 exomeRegions = "/bed/" + exomeRegions
+
+clinvar = ARGUMENTS.get("clinvar",env["clinvar"])
+clinvar = "/cosmic/" + clinvar
 
 tumor = ARGUMENTS.get("tumor",env["tumor"])
 
@@ -129,6 +135,21 @@ if "mutect" in variantCallersList:
     muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
     muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_mutect.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor, "{}/07_recalibrated.bam".format(tumor), "{}/07_recalibrated.bam".format(normal)],muTectCMD)
 
+    
+    #Annotation by snpEff
+    mutectEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
+    mutectEFF = env.Command(["Variants/Mutect/{}_{}/02_mutect_snpeff.vcf".format(tumor,normal)],[muTect[2]],mutectEFFCMD)
+
+
+    # Annotation with ClinVar
+    mutectClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    mutectClinvar = env.Command(["Variants/Mutect/{}_{}/03_mutect_clinvar.vcf".format(tumor,normal)], [mutectEFF], mutectClinvarCMD)
+
+
+    # Cosmic coding variants annotation
+    mutectCosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    mutectCosmicCoding = env.Command(["Variants/Mutect/{}_{}/04_mutect_cosmic.vcf".format(tumor,normal)], [mutectClinvar], mutectClinvarCMD)
+
 #######################################
 ##### Variant Calling with MuTect2 ####
 #######################################
@@ -150,6 +171,21 @@ if "mutect2" in variantCallersList:
 
         selectVariantsMutect2CMD = "${SOURCES[0]} SelectVariants -R ${SOURCES[1]} -V ${SOURCES[2]} -O $TARGET --exclude-filtered"
         selectVariantsMutect2 = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_pass.vcf".format(tumor,normal)],[gatk4,reference,filterMutectCalls],selectVariantsMutect2CMD)
+
+
+    #Annotation by snpEff
+    mutect2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
+    mutect2EFF = env.Command(["Variants/Mutect2/{}_{}/04_mutect2_snpeff.vcf".format(tumor,normal)],[selectVariantsMutect2],mutect2EFFCMD)
+
+
+    # Annotation with ClinVar
+    mutect2ClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    mutect2Clinvar = env.Command(["Variants/Mutect2/{}_{}/05_mutect2_clinvar.vcf".format(tumor,normal)], [mutect2EFF], mutect2ClinvarCMD)
+
+
+    # Cosmic coding variants annotation
+    mutect2CosmicCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    mutect2Cosmic = env.Command(["Variants/Mutect2/{}_{}/06_mutect2_cosmic.vcf".format(tumor,normal)], [mutect2Clinvar], mutect2CosmicCMD)
 
 #######################################
 #### Variant Calling with Strelka2 ####
@@ -173,7 +209,17 @@ if "strelka2" in variantCallersList:
 
     #Annotation by snpEff
     strelka2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
-    strelka2EFF = env.Command(["Variants/Strelka2/{}_{}/03_strelka2_snvs_pass_snpeff.vcf".format(tumor,normal)],[selectVariantsStrelka2snvs], strelka2EFFCMD )
+    strelka2EFF = env.Command(["Variants/Strelka2/{}_{}/03_strelka2_snvs_snpeff.vcf".format(tumor,normal)],[selectVariantsStrelka2snvs], strelka2EFFCMD )
+
+
+    # Annotation with ClinVar
+    strelka2clinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    strelka2clinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_indels_clinvar.vcf".format(tumor,normal)], [strelka2EFF], strelka2clinvarCmd)
+
+    # Cosmic coding variants annotation
+    cosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    cosmicCoding = env.Command(["Variants/Strelka2/{}_{}/05_strelka2_indels_cosmic.vcf".format(tumor,normal)], [strelka2EFF], cosmicCodingCmd)
+
 
  #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
 #    updateGTStrelka2Snp = env.Command(["{}_strelka2_gt_snvs.vcf".format(tumorName)],[selectVariantsStrelka2snvs],updateGTStrelka2SnpCMD)
@@ -246,3 +292,14 @@ if "varscan" in variantCallersList:
     #Annotation by snpEff
     varscansnpEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
     varscansnpEFF = env.Command(["Variants/VarScan/{}_{}/04_varscan_snp_snpeff.vcf".format(tumor,normal)],[snpsToVCF],varscansnpEFFCMD)
+
+
+    # Annotation with ClinVar
+    varscanclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    varscanclinvar = env.Command(["Variants/VarScan/{}_{}/05_varscan_snp_clinvar.vcf".format(tumor,normal)], [varscansnpEFF], varscanclinvarCMD)
+
+    # Cosmic coding variants annotation
+    varscanCosmicCodingCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    varscanCosmicCoding = env.Command(["Variants/VarScan/{}_{}/06_strelka2_indels_cosmic.vcf".format(tumor,normal)], [varscanclinvar], varscanCosmicCodingCMD)
+
+
