@@ -162,30 +162,25 @@ if "mutect2" in variantCallersList:
         filterMutectCallsCMD = "${SOURCES[0]} FilterMutectCalls -V ${SOURCES[1]} -contamination-table ${SOURCES[2]} -O $TARGET"
         filterMutectCalls = env.Command(["Variants/Mutect2/{}_{}/02_mutect2_filtered.vcf".format(tumor,normal)],[gatk4,muTect2,calculateContamination],filterMutectCallsCMD)
                         
-        selectVariantsMutect2CMD = "${SOURCES[0]} SelectVariants -R ${SOURCES[1]} -V ${SOURCES[2]} -O $TARGET --exclude-filtered"
-        selectVariantsMutect2 = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_pass.vcf".format(tumor,normal)],[gatk4,reference,filterMutectCalls],selectVariantsMutect2CMD)
 
     else:
         filterMutectCallsCMD = "${SOURCES[0]} FilterMutectCalls -V ${SOURCES[1]} -O $TARGET"
         filterMutectCalls = env.Command(["Variants/Mutect2/{}_{}/02_mutect2_filtered.vcf".format(tumor,normal)],[gatk4,muTect2],filterMutectCallsCMD)
 
-        selectVariantsMutect2CMD = "${SOURCES[0]} SelectVariants -R ${SOURCES[1]} -V ${SOURCES[2]} -O $TARGET --exclude-filtered"
-        selectVariantsMutect2 = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_pass.vcf".format(tumor,normal)],[gatk4,reference,filterMutectCalls],selectVariantsMutect2CMD)
-
 
     #Annotation by snpEff
     mutect2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} $SOURCE > $TARGET".format(snpeffGenomeVersion)
-    mutect2EFF = env.Command(["Variants/Mutect2/{}_{}/04_mutect2_snpeff.vcf".format(tumor,normal)],[selectVariantsMutect2],mutect2EFFCMD)
+    mutect2EFF = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_snpeff.vcf".format(tumor,normal)],[filterMutectCalls],mutect2EFFCMD)
 
 
     # Annotation with ClinVar
     mutect2ClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
-    mutect2Clinvar = env.Command(["Variants/Mutect2/{}_{}/05_mutect2_clinvar.vcf".format(tumor,normal)], [mutect2EFF], mutect2ClinvarCMD)
+    mutect2Clinvar = env.Command(["Variants/Mutect2/{}_{}/04_mutect2_clinvar.vcf".format(tumor,normal)], [mutect2EFF], mutect2ClinvarCMD)
 
 
     # Cosmic coding variants annotation
     mutect2CosmicCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
-    mutect2Cosmic = env.Command(["Variants/Mutect2/{}_{}/06_mutect2_cosmic.vcf".format(tumor,normal)], [mutect2Clinvar], mutect2CosmicCMD)
+    mutect2Cosmic = env.Command(["Variants/Mutect2/{}_{}/05_mutect2_cosmic.vcf".format(tumor,normal)], [mutect2Clinvar], mutect2CosmicCMD)
 
 #######################################
 #### Variant Calling with Strelka2 ####
