@@ -63,21 +63,21 @@ Decider('timestamp-newer')
 ####################
 
 reference = ARGUMENTS.get("reference", env["reference"])
-reference = "/genome/" + reference
+reference = "/annotations/" + reference
 
 processors = ARGUMENTS.get("processors", env["processors"])
 
 dbsnpVCF = ARGUMENTS.get("dbsnpVCF",env["dbsnpVCF"])
-dbsnpVCF = "/dbsnp/" + dbsnpVCF
+dbsnpVCF = "/annotations/" + dbsnpVCF
 
 cosmic = ARGUMENTS.get("cosmic",env["cosmic"])
-cosmic = "/cosmic/" + cosmic
+cosmic = "/annotations/" + cosmic
 
 exomeRegions = ARGUMENTS.get("exomeRegions",env["exomeRegions"])
-exomeRegions = "/bed/" + exomeRegions
+exomeRegions = "/annotations/" + exomeRegions
 
 clinvar = ARGUMENTS.get("clinvar",env["clinvar"])
-clinvar = "/cosmic/" + clinvar
+clinvar = "/annotations/" + clinvar
 
 tumor = ARGUMENTS.get("tumor",env["tumor"])
 
@@ -98,7 +98,7 @@ maxPopulationAlleleFrequency = ARGUMENTS.get("maxPopulationAlleleFrequency",env[
 minPopulationAlleleFrequency = ARGUMENTS.get("minPopulationAlleleFrequency",env["minPopulationAlleleFrequency"])
 
 gnomadVCF = ARGUMENTS.get("gnomadVCF",env["gnomadVCF"])
-gnomadVCF = "/gnomad/" + gnomadVCF
+gnomadVCF = "/annotations/" + gnomadVCF
 
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")

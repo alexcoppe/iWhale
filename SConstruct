@@ -58,7 +58,7 @@ sampleName = os.path.basename(os.getcwd())
 ##### Alignment of the reads with bwa and sorting with picard ####
 ##################################################################
 
-bwaCMD = "bwa mem -M -R \"@RG\\tID:{}\\tLB:{}\\tSM:{}\\tPL:ILLUMINA\"  -t {} /genome/{}".format(sampleName,"exome",sampleName, processors, reference) + " <(zcat ${SOURCES[0]}) <(zcat ${SOURCES[1]}) | "
+bwaCMD = "bwa mem -M -R \"@RG\\tID:{}\\tLB:{}\\tSM:{}\\tPL:ILLUMINA\"  -t {} /annotations/{}".format(sampleName,"exome",sampleName, processors, reference) + " <(zcat ${SOURCES[0]}) <(zcat ${SOURCES[1]}) | "
 
 sortSamCMD = "java -jar {} SortSam INPUT=/dev/stdin OUTPUT=$TARGET SORT_ORDER=coordinate CREATE_INDEX=true".format(picard)
 
@@ -78,7 +78,7 @@ pcrRemoval = env.Command(["02_mapping-rmdup.bam"], [bam], pcrRemovalCMD)
 ##### failing vendor quality check, duplicated and mapping quality unavailable          ##############
 ######################################################################################################
 
-filteringBamCMD = "{} PrintReads -R /genome/{} -I $SOURCE -O $TARGET -RF MappingQualityNotZeroReadFilter -RF GoodCigarReadFilter -RF MappedReadFilter -RF PrimaryLineReadFilter -RF PassesVendorQualityCheckReadFilter -RF MappingQualityAvailableReadFilter -RF MateOnSameContigOrNoMappedMateReadFilter -RF PairedReadFilter".format(gatk4,reference)
+filteringBamCMD = "{} PrintReads -R /annotations/{} -I $SOURCE -O $TARGET -RF MappingQualityNotZeroReadFilter -RF GoodCigarReadFilter -RF MappedReadFilter -RF PrimaryLineReadFilter -RF PassesVendorQualityCheckReadFilter -RF MappingQualityAvailableReadFilter -RF MateOnSameContigOrNoMappedMateReadFilter -RF PairedReadFilter".format(gatk4,reference)
 filteringBam = env.Command(["03_mapping-rmdup-cleaned.bam"],[pcrRemoval],filteringBamCMD)
 
 #########################################
@@ -87,27 +87,27 @@ filteringBam = env.Command(["03_mapping-rmdup-cleaned.bam"],[pcrRemoval],filteri
 
 #Table of putative indels
 
-putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator -R /genome/{} -o $TARGET  -I $SOURCE -nt {}".format(gatk3,reference,processors)
+putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator -R /annotations/{} -o $TARGET  -I $SOURCE -nt {}".format(gatk3,reference,processors)
 putativeIndelsTable = env.Command(["04_realigning.intervals"], [filteringBam], putativeIndelsTableCMD)
 
 #Local realignment around indels
 
-indelRealignerCmd = "java -Xmx4g -jar {} -R /genome/{}".format(gatk3, reference) + " -I ${SOURCES[0]} -T IndelRealigner -targetIntervals ${SOURCES[1]} -o $TARGET"
+indelRealignerCmd = "java -Xmx4g -jar {} -R /annotations/{}".format(gatk3, reference) + " -I ${SOURCES[0]} -T IndelRealigner -targetIntervals ${SOURCES[1]} -o $TARGET"
 indelRealignment = env.Command(["05_realigned.bam"], [filteringBam, putativeIndelsTable],indelRealignerCmd)
 
 ######################################
 #### Quality score recalibration #####
 ######################################
 
-recalibrationTableCMD = "{} BaseRecalibrator -I $SOURCE -R /genome/{}  --known-sites /dbsnp/{} -O $TARGET".format(gatk4,reference,dbsnpVCF)
+recalibrationTableCMD = "{} BaseRecalibrator -I $SOURCE -R /annotations/{}  --known-sites /annotations/{} -O $TARGET".format(gatk4,reference,dbsnpVCF)
 recalibrationTable = env.Command(["06_{}.grp".format(sampleName)], [indelRealignment], recalibrationTableCMD)
 
-renderReadsCMD = "{} ApplyBQSR -R /genome/{}".format(gatk4,reference) + " -I ${SOURCES[0]} -bqsr ${SOURCES[1]} -O $TARGET"
+renderReadsCMD = "{} ApplyBQSR -R /annotations/{}".format(gatk4,reference) + " -I ${SOURCES[0]} -bqsr ${SOURCES[1]} -O $TARGET"
 renderReads = env.Command(["07_recalibrated.bam"], [indelRealignment, recalibrationTable], renderReadsCMD)
 
 ######################
 ##### Statistics #####
 ######################
 
-coverageHistCMD = "bedtools coverage -hist -abam $SOURCE -b /bed/{}".format(exomeRegions) + " | grep ^all > $TARGET"
+coverageHistCMD = "bedtools coverage -hist -abam $SOURCE -b /annotations/{}".format(exomeRegions) + " | grep ^all > $TARGET"
 coverageHist = env.Command(["08_{}-coverage-hist.txt".format(sampleName)], [renderReads], coverageHistCMD)
