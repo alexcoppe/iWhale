@@ -20,6 +20,7 @@ ADD https://github.com/Illumina/strelka/releases/download/v${strelka2_version}/s
 ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/VarScan.v${varscan_version}.jar /tmp/
 ADD https://raw.githubusercontent.com/alexcoppe/varscan_accessories/master/vs_format_converter.py /tmp/
 ADD https://downloads.sourceforge.net/project/snpeff/snpEff_v${snpeff_version}_core.zip /tmp/
+ADD https://raw.githubusercontent.com/alexcoppe/mutect-vcf-selector/master/mutect-vcf-selector.py /tmp/
 
 
 COPY checkFiles.py /usr/bin/checkFiles.py
