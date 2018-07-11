@@ -216,11 +216,11 @@ if "strelka2" in variantCallersList:
 
     # Annotation with ClinVar
     strelka2clinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
-    strelka2clinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_indels_clinvar.vcf".format(tumor,normal)], [strelka2EFF], strelka2clinvarCmd)
+    strelka2clinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_snvs_clinvar.vcf".format(tumor,normal)], [strelka2EFF], strelka2clinvarCmd)
 
     # Cosmic coding variants annotation
     cosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
-    cosmicCoding = env.Command(["Variants/Strelka2/{}_{}/05_strelka2_indels_cosmic.vcf".format(tumor,normal)], [strelka2EFF], cosmicCodingCmd)
+    cosmicCoding = env.Command(["Variants/Strelka2/{}_{}/05_strelka2_snvs_cosmic.vcf".format(tumor,normal)], [strelka2EFF], cosmicCodingCmd)
 
 
  #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
@@ -302,6 +302,6 @@ if "varscan" in variantCallersList:
 
     # Cosmic coding variants annotation
     varscanCosmicCodingCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
-    varscanCosmicCoding = env.Command(["Variants/VarScan/{}_{}/06_strelka2_indels_cosmic.vcf".format(tumor,normal)], [varscanclinvar], varscanCosmicCodingCMD)
+    varscanCosmicCoding = env.Command(["Variants/VarScan/{}_{}/06_varscan_snp_cosmic.vcf".format(tumor,normal)], [varscanclinvar], varscanCosmicCodingCMD)
 
 
