@@ -47,7 +47,7 @@ vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]
 
 
 # snpEff Parameters
-vars.Add("snpeffDir", "SnpEFF directory", "/working/Variants/snpeffData")
+vars.Add("snpeffDir", "SnpEFF directory", "/working/Variants/")
 vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
 
 # ClinVAr Parameters
@@ -137,7 +137,7 @@ if "mutect" in variantCallersList:
 
     
     #Annotation by snpEff
-    mutectEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Mutect/{}_{}/snpEff_summary.html $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal)
+    mutectEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Mutect/{}_{}/snpEff_summary.html -dataDir {} $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
     mutectEFF = env.Command(["Variants/Mutect/{}_{}/02_mutect_snpeff.vcf".format(tumor,normal), 
 				"Variants/Mutect/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                                 "Variants/Mutect/{}_{}/snpEff_summary.html".format(tumor,normal)],[muTect[2]],mutectEFFCMD)
@@ -174,7 +174,7 @@ if "mutect2" in variantCallersList:
 
 
     #Annotation by snpEff
-    mutect2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Mutect2/{}_{}/snpEff_summary.html  $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal)
+    mutect2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Mutect2/{}_{}/snpEff_summary.html -dataDir {} $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
     mutect2EFF = env.Command(["Variants/Mutect2/{}_{}/03_mutect2_snpeff.vcf".format(tumor,normal),
                               "Variants/Mutect2/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                               "Variants/Mutect2/{}_{}/snpEff_summary.html".format(tumor,normal)],[filterMutectCalls],mutect2EFFCMD)
@@ -214,7 +214,7 @@ if "strelka2" in variantCallersList:
     selectVariantsStrelka2indels = env.Command(["Variants/Strelka2/{}_{}/02_strelka2_indels_pass.vcf".format(tumor,normal)],[gatk4,reference,selectVariantsStrelka2snvs],selectVariantsStrelka2indelsCMD)
 
     #Annotation by snpEff
-    strelka2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Strelka2/{}_{}/snpEff_summary.html $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal)
+    strelka2EFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Strelka2/{}_{}/snpEff_summary.html -dataDir {} $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
     strelka2EFF = env.Command(["Variants/Strelka2/{}_{}/03_strelka2_snvs_snpeff.vcf".format(tumor,normal),
                                "Variants/Strelka2/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                                "Variants/Strelka2/{}_{}/snpEff_summary.html".format(tumor,normal)],[selectVariantsStrelka2snvs], strelka2EFFCMD )
@@ -298,7 +298,7 @@ if "varscan" in variantCallersList:
 
 
     #Annotation by snpEff
-    varscansnpEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/VarScan/{}_{}/snpEff_summary.html $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal)
+    varscansnpEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/VarScan/{}_{}/snpEff_summary.html  -dataDir {}  $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
     varscansnpEFF = env.Command(["Variants/VarScan/{}_{}/04_varscan_snp_snpeff.vcf".format(tumor,normal),
                                  "Variants/VarScan/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                                  "Variants/VarScan/{}_{}/snpEff_summary.html".format(tumor,normal)],[snpsToVCF],varscansnpEFFCMD)
