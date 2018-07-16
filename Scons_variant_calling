@@ -47,7 +47,7 @@ vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]
 
 
 # snpEff Parameters
-vars.Add("snpeffDir", "SnpEFF directory", "/working/Variants/")
+vars.Add("snpeffDir", "SnpEFF directory", "/annotations")
 vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
 
 # ClinVAr Parameters
@@ -113,7 +113,9 @@ varScanMinVarFreq = ARGUMENTS.get("varScanMinVarFreq", env["varScanMinVarFreq"])
 
 # snpEff parameters
 snpeffGenomeVersion = ARGUMENTS.get("snpeffGenomeVersion", env["snpeffGenomeVersion"])
-snpeffDir = ARGUMENTS.get("sneffDir", env["snpeffDir"])
+#snpeffDir = "/annotations/" + snpeffGenomeVersion
+snpeffDir = "/annotations/"
+#snpeffDir = ARGUMENTS.get("sneffDir", env["snpeffDir"])
 
 
 ############################################
