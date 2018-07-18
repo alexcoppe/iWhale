@@ -152,7 +152,7 @@ if "mutect" in variantCallersList:
 
     # Cosmic coding variants annotation
     mutectCosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
-    mutectCosmicCoding = env.Command(["Variants/Mutect/{}_{}/04_mutect_cosmic.vcf".format(tumor,normal)], [mutectClinvar], mutectClinvarCMD)
+    mutectCosmicCoding = env.Command(["Variants/Mutect/{}_{}/04_mutect_cosmic.vcf".format(tumor,normal)], [mutectClinvar], mutectCosmicCodingCmd)
 
     mutectFilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -e > $TARGET"
     mutectFiltering = env.Command(["Variants/Mutect/{}_{}/05_mutect_filtered.vcf".format(tumor,normal)], [mutectCosmicCoding], mutectFilteringCMD)
