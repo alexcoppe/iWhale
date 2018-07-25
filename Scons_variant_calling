@@ -154,7 +154,7 @@ if "mutect" in variantCallersList:
     mutectCosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
     mutectCosmicCoding = env.Command(["Variants/Mutect/{}_{}/04_mutect_cosmic.vcf".format(tumor,normal)], [mutectClinvar], mutectCosmicCodingCmd)
 
-    mutectFilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -e > $TARGET"
+    mutectFilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv  -e > $TARGET"
     mutectFiltering = env.Command(["Variants/Mutect/{}_{}/05_mutect_filtered.vcf".format(tumor,normal)], [mutectCosmicCoding], mutectFilteringCMD)
 
 #######################################
@@ -192,7 +192,7 @@ if "mutect2" in variantCallersList:
     mutect2Cosmic = env.Command(["Variants/Mutect2/{}_{}/05_mutect2_cosmic.vcf".format(tumor,normal)], [mutect2Clinvar], mutect2CosmicCMD)
 
     # Filtering variants
-    mutect2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -e > $TARGET"
+    mutect2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
     mutect2Filtering = env.Command(["Variants/Mutect2/{}_{}/06_mutect2_filtered.vcf".format(tumor,normal)], [mutect2Cosmic], mutect2FilteringCMD)
 
 #######################################
