@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 ENV bwa_version 0.7.17
 ENV picard_version 2.17.11
-ENV gatk4_version 4.0.2.1
+ENV gatk4_version 4.0.6.0
 ENV gatk3_version 3.8-1
 ENV PATH "$PATH:/tmp/jre1.8.0_161/bin/"
 ENV strelka2_version 2.9.2
