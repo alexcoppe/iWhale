@@ -191,9 +191,18 @@ if "mutect2" in variantCallersList:
     mutect2CosmicCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
     mutect2Cosmic = env.Command(["Variants/Mutect2/{}_{}/05_mutect2_cosmic.vcf".format(tumor,normal)], [mutect2Clinvar], mutect2CosmicCMD)
 
+    
+    # dbSNP annotation
+    mutect2DbsnpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(dbsnpVCF)
+    mutect2Dbsnp = env.Command(["Variants/Mutect2/{}_{}/06_mutect2_dbsnp.vcf".format(tumor,normal)], [mutect2Cosmic], mutect2DbsnpCMD)
+
+    # gnomAD annotation
+    mutect2gnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
+    mutect2gnomad = env.Command(["Variants/Mutect2/{}_{}/07_mutect2_gnomad.vcf".format(tumor,normal)], [mutect2Dbsnp], mutect2gnomadCMD)
+
     # Filtering variants
     mutect2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
-    mutect2Filtering = env.Command(["Variants/Mutect2/{}_{}/06_mutect2_filtered.vcf".format(tumor,normal)], [mutect2Cosmic], mutect2FilteringCMD)
+    mutect2Filtering = env.Command(["Variants/Mutect2/{}_{}/08_mutect2_filtered.vcf".format(tumor,normal)], [mutect2gnomad], mutect2FilteringCMD)
 
 #######################################
 #### Variant Calling with Strelka2 ####
@@ -221,14 +230,49 @@ if "strelka2" in variantCallersList:
                                "Variants/Strelka2/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                                "Variants/Strelka2/{}_{}/snpEff_summary.html".format(tumor,normal)],[selectVariantsStrelka2snvs], strelka2EFFCMD )
 
+    strelka2indelsEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Strelka2/{}_{}/snpEff_indels_summary.html -dataDir {} $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
+    strelka2indelsEFF = env.Command(["Variants/Strelka2/{}_{}/03_strelka2_indels_snpeff.vcf".format(tumor,normal),
+                               "Variants/Strelka2/{}_{}/snpEff_indels_summary.genes.txt".format(tumor,normal),
+                               "Variants/Strelka2/{}_{}/snpEff_indels_summary.html".format(tumor,normal)],[selectVariantsStrelka2indels], strelka2indelsEFFCMD )
+
+
+
 
     # Annotation with ClinVar
     strelka2clinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
     strelka2clinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_snvs_clinvar.vcf".format(tumor,normal)], [strelka2EFF], strelka2clinvarCmd)
 
+    strelka2indelsclinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    strelka2indelsclinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_indels_clinvar.vcf".format(tumor,normal)], [strelka2indelsEFF], strelka2indelsclinvarCmd)
+
     # Cosmic coding variants annotation
     cosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
     cosmicCoding = env.Command(["Variants/Strelka2/{}_{}/05_strelka2_snvs_cosmic.vcf".format(tumor,normal)], [strelka2EFF], cosmicCodingCmd)
+
+    cosmicindelsCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    cosmicindelsCoding = env.Command(["Variants/Strelka2/{}_{}/05_strelka2_indels_cosmic.vcf".format(tumor,normal)], [strelka2indelsclinvar], cosmicindelsCodingCmd)
+
+    # dbSNP annotation
+    strelka2DbsnpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(dbsnpVCF)
+    strelka2Dbsnp = env.Command(["Variants/Strelka2/{}_{}/06_strelka2_snvs_dbsnp.vcf".format(tumor,normal)], [cosmicCoding], strelka2DbsnpCMD)
+
+    strelka2indelsDbsnpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(dbsnpVCF)
+    strelka2indelsDbsnp = env.Command(["Variants/Strelka2/{}_{}/06_strelka2_indels_dbsnp.vcf".format(tumor,normal)], [cosmicindelsCoding], strelka2indelsDbsnpCMD)
+
+    # gnomAD annotation
+    strelka2gnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
+    strelka2gnomad = env.Command(["Variants/Strelka2/{}_{}/07_strelka2_snvs_gnomad.vcf".format(tumor,normal)], [strelka2Dbsnp], strelka2gnomadCMD)
+
+    strelka2indelsgnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
+    strelka2indelsgnomad = env.Command(["Variants/Strelka2/{}_{}/07_strelka2_indels_gnomad.vcf".format(tumor,normal)], [strelka2indelsDbsnp], strelka2indelsgnomadCMD)
+
+    # Filtering variants
+    #strelka2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
+    #strelka2Filtering = env.Command(["Variants/Strelka2/{}_{}/08_strelka2_snvs_filtered.vcf".format(tumor,normal)], [strelka2gnomad], strelka2FilteringCMD)
+
+
+
+
 
 
  #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
@@ -305,14 +349,41 @@ if "varscan" in variantCallersList:
                                  "Variants/VarScan/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
                                  "Variants/VarScan/{}_{}/snpEff_summary.html".format(tumor,normal)],[snpsToVCF],varscansnpEFFCMD)
 
+    varscanindelsEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/VarScan/{}_{}/snpEff_indels_summary.html  -dataDir {}  $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
+    varscanindelsEFF = env.Command(["Variants/VarScan/{}_{}/04_varscan_indels_snpeff.vcf".format(tumor,normal),
+                                 "Variants/VarScan/{}_{}/snpEff_indels_summary.genes.txt".format(tumor,normal),
+                                 "Variants/VarScan/{}_{}/snpEff_indels_summary.html".format(tumor,normal)],[snpsToIndels],varscanindelsEFFCMD)
+
 
 
     # Annotation with ClinVar
     varscanclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
     varscanclinvar = env.Command(["Variants/VarScan/{}_{}/05_varscan_snp_clinvar.vcf".format(tumor,normal)], [varscansnpEFF], varscanclinvarCMD)
 
+    varscanindelsclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    varscanindelsclinvar = env.Command(["Variants/VarScan/{}_{}/05_varscan_indels_clinvar.vcf".format(tumor,normal)], [varscanindelsEFF], varscanindelsclinvarCMD)
+
     # Cosmic coding variants annotation
     varscanCosmicCodingCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
     varscanCosmicCoding = env.Command(["Variants/VarScan/{}_{}/06_varscan_snp_cosmic.vcf".format(tumor,normal)], [varscanclinvar], varscanCosmicCodingCMD)
+
+    varscanindelsCosmicCodingCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
+    varscanindelsCosmicCoding = env.Command(["Variants/VarScan/{}_{}/06_varscan_indels_cosmic.vcf".format(tumor,normal)], [varscanindelsclinvar], varscanindelsCosmicCodingCMD)
+
+    # dbSNP annotation
+    varscanDbsnpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(dbsnpVCF)
+    varscanDbsnp = env.Command(["Variants/VarScan/{}_{}/07_varscan_snp_dbsnp.vcf".format(tumor,normal)], [varscanCosmicCoding], varscanDbsnpCMD)
+
+    varscanindelsDbsnpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(dbsnpVCF)
+    varscanindelsDbsnp = env.Command(["Variants/VarScan/{}_{}/07_varscan_indels_dbsnp.vcf".format(tumor,normal)], [varscanindelsCosmicCoding], varscanindelsDbsnpCMD)
+
+    # gnomAD annotation
+    varscangnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
+    varscangnomad = env.Command(["Variants/VarScan/{}_{}/08_varscan_snp_gnomad.vcf".format(tumor,normal)], [varscanDbsnp], varscangnomadCMD)
+
+    varscanindelsgnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
+    varscanindelsgnomad = env.Command(["Variants/VarScan/{}_{}/08_varscan_indels_gnomad.vcf".format(tumor,normal)], [varscanindelsDbsnp], varscanindelsgnomadCMD)
+
+ 
 
 
