@@ -23,7 +23,7 @@ ADD https://downloads.sourceforge.net/project/snpeff/snpEff_v${snpeff_version}_c
 ADD https://raw.githubusercontent.com/alexcoppe/mutect-vcf-selector/master/mutect-vcf-selector.py /tmp/
 
 
-COPY checkFiles.py /usr/bin/checkFiles.py
+COPY iwhale.py /usr/bin/iwhale
 COPY SConstruct /tmp/
 COPY configuration.py /tmp/
 COPY Scons_variant_calling /tmp/
@@ -54,4 +54,4 @@ RUN apt-get update \
 
 WORKDIR /working
 
-ENTRYPOINT ["python","/usr/bin/checkFiles.py","-s","/tmp"]
+ENTRYPOINT ["python","/usr/bin/iwhale","-s","/tmp"]
