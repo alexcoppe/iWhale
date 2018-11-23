@@ -4,6 +4,8 @@ import os
 from subprocess import call
 import argparse
 import sys
+sys.path.insert(0, '/working')
+import configuration
 
 def checkTumorControlMatches(txt):
     if os.path.exists(txt):
@@ -27,12 +29,16 @@ def main():
     args = parser.parse_args()
     samples_directories = []
     empty_directories = []
+
+    directoriesTiIgnore = ["Variants", "VCF"]
+    variantCallerDirs = {"mutect2":"Mutect2", "mutect":"Mutect", "strelka2":"Strelka2", "varscan":"VarScan"}
+
     for f in os.listdir(os.getcwd()):
         if os.path.isdir(f):
             os.chdir(f)
             if args.pairedend == True:
                 if not (os.path.isfile("1.fastq.gz") and os.path.isfile("2.fastq.gz")):
-                    if not f == "Variants":
+                    if not f in directoriesTiIgnore:
                         empty_directories.append(f)
                 else:
                     samples_directories.append(f)
@@ -50,13 +56,18 @@ def main():
             os.chdir("..")
         goodSampleMatches = checkTumorControlMatches("tumor_control_samples.txt")
         if goodSampleMatches == True:
+            variantCallers =  configuration.variantCallers.split(",")
+            chosenVariantCallers = [variantCallerDirs.get(item) for item in variantCallers]
             os.system("mkdir Variants")
-            os.system("mkdir Variants/Mutect Variants/Mutect2 Variants/Strelka2 Variants/VarScan")
+            directoriesToCreate = ["Variants/{}".format(variantCaller) for variantCaller in chosenVariantCallers]
+            chosenVariantCallersString = " ".join(directoriesToCreate)
+            os.system("mkdir " + chosenVariantCallersString)
             pairFile = open("tumor_control_samples.txt")
             for pair in pairFile:
                 tumor,normal = pair.split(" ")[0],pair.split(" ")[1]
                 pairName = tumor+"_"+normal.strip()
-                os.system("mkdir Variants/Mutect/{0} Variants/Mutect2/{0} Variants/Strelka2/{0} Variants/VarScan/{0}".format(pairName))
+                sampleDirectories = [directory + "/{}".format(pairName) for directory in directoriesToCreate]
+                os.system("mkdir " + " ".join(sampleDirectories))
                 os.system("scons -j {} --debug=explain -f {}/Scons_variant_calling tumor={} normal={}".format(args.processors,args.sconsdir,tumor,normal))
         else:
             sys.stderr.write(goodSampleMatches+"\n")
