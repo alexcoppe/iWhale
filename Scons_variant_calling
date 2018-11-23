@@ -204,6 +204,20 @@ if "mutect2" in variantCallersList:
     mutect2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
     mutect2Filtering = env.Command(["Variants/Mutect2/{}_{}/08_mutect2_filtered.vcf".format(tumor,normal)], [mutect2gnomad], mutect2FilteringCMD)
 
+    # Tag variant type
+    mutect2VariantTypeCMD= "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar varType  $SOURCE > $TARGET"
+    mutect2VariantType = env.Command(["Variants/Mutect2/{}_{}/08.5_mutect2_vartype.vcf".format(tumor,normal)], [mutect2Filtering], mutect2VariantTypeCMD)
+
+    # Selection of snps
+    mutect2snpCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar filter \"(VARTYPE has 'SNP') | (VARTYPE has 'MNP')\" $SOURCE > $TARGET"
+    mutect2snp = env.Command(["Variants/Mutect2/{}_{}/09_mutect2_snps.vcf".format(tumor,normal)], [mutect2VariantType], mutect2snpCMD)
+
+
+    # Selection of indels
+    mutect2indelsCMD = "java -jar /tmp/snpEff/SnpSift.jar filter \"(VARTYPE has 'INS') | (VARTYPE has 'DEL') | (VARTYPE has 'MIXED')\" $SOURCE > $TARGET"
+    mutect2indels = env.Command(["Variants/Mutect2/{}_{}/09_mutect2_indels.vcf".format(tumor,normal)], [mutect2VariantType], mutect2indelsCMD)
+
+
 #######################################
 #### Variant Calling with Strelka2 ####
 #######################################
