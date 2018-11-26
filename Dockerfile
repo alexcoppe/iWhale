@@ -8,8 +8,10 @@ ENV PATH "$PATH:/tmp/jre1.8.0_161/bin/"
 ENV strelka2_version 2.9.2
 ENV varscan_version 2.4.2
 ENV snpeff_version 4_3t
+ENV bedtools_version 2.17.0
 
-ADD  http://downloads.sourceforge.net/project/bio-bwa/bwa-${bwa_version}.tar.bz2 /tmp/
+ADD https://github.com/arq5x/bedtools/archive/v${bedtools_version}.tar.gz /tmp/
+ADD http://downloads.sourceforge.net/project/bio-bwa/bwa-${bwa_version}.tar.bz2 /tmp/
 ADD https://github.com/broadinstitute/picard/releases/download/${picard_version}/picard.jar /tmp/
 ADD http://javadl.oracle.com/webapps/download/AutoDL?BundleId=230532_2f38c3b165be4555a1fa6e98c45e0808 /tmp/java.tar.gz
 ADD https://github.com/broadinstitute/gatk/releases/download/${gatk4_version}/gatk-${gatk4_version}.zip /tmp/
@@ -37,6 +39,11 @@ RUN apt-get update \
     && mv /tmp/bwa-${bwa_version}/bwa /usr/bin \
     && cd /tmp/ && tar xvzf java.tar.gz \
     && tar xvzf java7.tar.gz \
+    && tar xzvf v${bedtools_version}.tar.gz \
+    && cd bedtools-${bedtools_version} \
+    && make  \
+    && mv bin/* /usr/bin/ \
+    && cd /tmp/ \
     && unzip gatk-${gatk4_version}.zip \
     && mv gatk-${gatk4_version} gatk4 \
     && tar xvjf gatk3.bz2 \
@@ -49,7 +56,7 @@ RUN apt-get update \
     && cd /tmp/ && mv VarScan.v${varscan_version}.jar VarScan.jar \
     && cd /tmp/ \
     && unzip snpEff_v${snpeff_version}_core.zip \
-    && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip  && rm snpEff_v${snpeff_version}_core.zip  \
+    && rm -rf v${bedtools_version}.tar.gz bedtools-${bedtools_version} && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip  && rm snpEff_v${snpeff_version}_core.zip  \
     && rm /tmp/java7.tar.gz && rm -rf strelka-${strelka2_version}.release_src.tar.bz2 strelka-${strelka2_version}.release_src
 
 WORKDIR /working
