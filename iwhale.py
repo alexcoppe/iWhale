@@ -59,6 +59,7 @@ def main():
             variantCallers =  configuration.variantCallers.split(",")
             chosenVariantCallers = [variantCallerDirs.get(item) for item in variantCallers]
             os.system("mkdir Variants")
+            os.system("mkdir VCF")
             directoriesToCreate = ["Variants/{}".format(variantCaller) for variantCaller in chosenVariantCallers]
             chosenVariantCallersString = " ".join(directoriesToCreate)
             os.system("mkdir " + chosenVariantCallersString)

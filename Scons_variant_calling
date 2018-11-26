@@ -157,6 +157,11 @@ if "mutect" in variantCallersList:
     mutectFilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv  -e > $TARGET"
     mutectFiltering = env.Command(["Variants/Mutect/{}_{}/05_mutect_filtered.vcf".format(tumor,normal)], [mutectCosmicCoding], mutectFilteringCMD)
 
+
+    # Copy latest created .vcf file to VCF directory
+    copyMutectAnnotatedVariantsCMD = "cp $SOURCE $TARGET"
+    copyMutectAnnotatedVariants = env.Command(["VCF/{}_{}_mutect_snps.vcf".format(tumor,normal)], [mutectFiltering], copyMutectAnnotatedVariantsCMD)
+
 #######################################
 ##### Variant Calling with MuTect2 ####
 #######################################
@@ -216,6 +221,15 @@ if "mutect2" in variantCallersList:
     # Selection of indels
     mutect2indelsCMD = "java -jar /tmp/snpEff/SnpSift.jar filter \"(VARTYPE has 'INS') | (VARTYPE has 'DEL') | (VARTYPE has 'MIXED')\" $SOURCE > $TARGET"
     mutect2indels = env.Command(["Variants/Mutect2/{}_{}/09_mutect2_indels.vcf".format(tumor,normal)], [mutect2VariantType], mutect2indelsCMD)
+
+
+    # Copy latest created .vcf of snps to VCF directory
+    copyMutect2AnnotatedSnpsCMD = "cp $SOURCE $TARGET"
+    copyMutect2AnnotatedSnps = env.Command(["VCF/{}_{}_mutect2_snps.vcf".format(tumor,normal)], [mutect2snp], copyMutect2AnnotatedSnpsCMD)
+
+    # Copy latest created .vcf of indels to VCF directory
+    copyMutect2AnnotatedIndelsCMD = "cp $SOURCE $TARGET"
+    copyMutect2AnnotatedIndels = env.Command(["VCF/{}_{}_mutect2_indels.vcf".format(tumor,normal)], [mutect2indels], copyMutect2AnnotatedIndelsCMD)
 
 
 #######################################
@@ -279,6 +293,14 @@ if "strelka2" in variantCallersList:
 
     strelka2indelsgnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
     strelka2indelsgnomad = env.Command(["Variants/Strelka2/{}_{}/07_strelka2_indels_gnomad.vcf".format(tumor,normal)], [strelka2indelsDbsnp], strelka2indelsgnomadCMD)
+
+    # Move latest created vcf of snps to VCF directory
+    copyStrelka2SnpsAnnotatedCMD = "cp $SOURCE $TARGET"
+    copyStrelka2SnpsAnnotated = env.Command(["VCF/{}_{}_strelka2_snps.vcf".format(tumor,normal)], [strelka2gnomad], copyStrelka2SnpsAnnotatedCMD)
+
+    # Move latest created vcf of indels to VCF directory
+    copyStrelka2IndelsAnnotatedCMD = "cp $SOURCE $TARGET"
+    copyStrelka2IndelsAnnotated = env.Command(["VCF/{}_{}_strelka2_indels.vcf".format(tumor,normal)], [strelka2indelsgnomad], copyStrelka2IndelsAnnotatedCMD)
 
     # Filtering variants
     #strelka2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
@@ -398,6 +420,12 @@ if "varscan" in variantCallersList:
     varscanindelsgnomadCMD = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(gnomadVCF)
     varscanindelsgnomad = env.Command(["Variants/VarScan/{}_{}/08_varscan_indels_gnomad.vcf".format(tumor,normal)], [varscanindelsDbsnp], varscanindelsgnomadCMD)
 
- 
 
+    # Move latest created vcf of snps to VCF directory
+    copyVarscanAnnotatedCMD = "cp $SOURCE $TARGET"
+    copyVarscanAnnotated = env.Command(["VCF/{}_{}_varscan_snps.vcf".format(tumor,normal)], [varscangnomad], copyVarscanAnnotatedCMD)
+
+    # Move latest created vcf of indels to VCF directory
+    copyVarscanAnnotatedIndelsCMD = "cp $SOURCE $TARGET"
+    copyVarscanAnnotatedIndels = env.Command(["VCF/{}_{}_varscan_indels.vcf".format(tumor,normal)], [varscanindelsgnomad], copyVarscanAnnotatedIndelsCMD)
 
