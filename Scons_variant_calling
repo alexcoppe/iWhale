@@ -475,8 +475,8 @@ lastStepOfIndelCallerList.sort()
 
 variantCallerListIndels = variantCallersList[1:]
 
-variantCallersString = variantCallersString + " -o VCF/{}_{}_merged_snps.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal, ",".join(variantCallersList))
-combineVCFsSnps = env.Command(["VCF/{}_{}_merged_snps.vcf".format(tumor,normal)], lastStepOfVariantCallerList, variantCallersString)
+variantCallersString = variantCallersString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal, ",".join(variantCallersList))
+combineVCFsSnps = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf".format(tumor,normal)], lastStepOfVariantCallerList, variantCallersString)
 
-variantCallersIndelsString = variantCallersIndelsString + " -o VCF/{}_{}_merged_indels.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal,",".join(variantCallerListIndels))
-combineVCFsIndels = env.Command(["VCF/{}_{}_merged_indels.vcf".format(tumor,normal)], lastStepOfIndelCallerList, variantCallersIndelsString )
+variantCallersIndelsString = variantCallersIndelsString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_indels.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal,",".join(variantCallerListIndels))
+combineVCFsIndels = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_indels.vcf".format(tumor,normal)], lastStepOfIndelCallerList, variantCallersIndelsString )

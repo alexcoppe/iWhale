@@ -60,6 +60,7 @@ def main():
             chosenVariantCallers = [variantCallerDirs.get(item) for item in variantCallers]
             os.system("mkdir Variants")
             os.system("mkdir VCF")
+            os.system("mkdir VCF/Combined_VCFs_by_sample")
             directoriesToCreate = ["Variants/{}".format(variantCaller) for variantCaller in chosenVariantCallers]
             chosenVariantCallersString = " ".join(directoriesToCreate)
             os.system("mkdir " + chosenVariantCallersString)

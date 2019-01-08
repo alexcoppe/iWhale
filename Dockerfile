@@ -29,8 +29,10 @@ COPY iwhale.py /usr/bin/iwhale
 COPY SConstruct /tmp/
 COPY configuration.py /tmp/
 COPY Scons_variant_calling /tmp/
+COPY update_GT_Strelka2.py /usr/local/bin
 
 RUN apt-get update \
+    && chmod 755 /usr/local/bin/update_GT_Strelka2.py \
     && apt-get install -y apt-utils \
     && apt-get install -y python scons bzip2 make gcc zlib1g-dev unzip bedtools g++ samtools  \
     && cd /tmp/ && tar xjvf bwa-${bwa_version}.tar.bz2 \
