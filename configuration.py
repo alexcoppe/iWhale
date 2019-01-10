@@ -44,3 +44,9 @@ varScanMinCoverage = 10
 varScanPvalue = 0.05
 # Varscan --min-var-freq 0.02 
 varScanMinVarFreq = 0.02
+
+# Custom variant callers parameters
+
+mutectParameters = ""
+mutect2Parameters = ""
+varScanParameters = ""

@@ -40,11 +40,16 @@ vars.Add('gatk3','The path to gatk3',"/tmp/gatk3/GenomeAnalysisTK.jar")
 # MuTect2 Parameters
 vars.Add('mutect2Parameters',"Parameters for MuTect2","")
 
+# MuTect Parametes
+vars.Add("mutectParameters", "Parametes for MuTect", "")
+
 
 # VarScan Parameters
 vars.Add('varScanMinCoverage', 'VarScan minimum read depeh at a position to make a call [10]', "10")
 vars.Add('varScanPvalue', "VarScan default p-value threshold for calling variants [1e-01]", "0.1")
 vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]", "0.2")
+
+vars.Add("varScanParameters", "Parameters to be added to varScan2", "")
 
 
 # snpEff Parameters
@@ -106,6 +111,10 @@ gnomadVCF = "/annotations/" + gnomadVCF
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
 
+
+# Mutect Parameters
+mutectParameters = ARGUMENTS.get("mutectParameters", env["mutectParameters"])
+
 # MuTect2 Parameters
 mutect2Parameters = ARGUMENTS.get("mutect2Parameters",env["mutect2Parameters"])
 
@@ -113,6 +122,8 @@ mutect2Parameters = ARGUMENTS.get("mutect2Parameters",env["mutect2Parameters"])
 varScanMinCoverage = ARGUMENTS.get("varScanMinCoverage", env["varScanMinCoverage"])
 varScanPvalue = ARGUMENTS.get("varScanPvalue", env["varScanPvalue"])
 varScanMinVarFreq = ARGUMENTS.get("varScanMinVarFreq", env["varScanMinVarFreq"])
+varScanParameters = ARGUMENTS.get("varScanParameters", env["varScanParameters"])
+
 
 # snpEff parameters
 snpeffGenomeVersion = ARGUMENTS.get("snpeffGenomeVersion", env["snpeffGenomeVersion"])
@@ -137,7 +148,7 @@ if contamination == "y" or contamination == "yes":
 #####################################
 
 if "mutect" in variantCallersList:
-    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}"
+    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}" + " {}".format(mutectParameters)
     muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_mutect.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor, "{}/07_recalibrated.bam".format(tumor), "{}/07_recalibrated.bam".format(normal)],muTectCMD)
 
     
@@ -340,7 +351,7 @@ if "varscan" in variantCallersList:
                      ' --min-coverage 10 ' \
                      ' --somatic-p-value 0.05 ' \
                      ' --p-value 0.99 ' \
-                     ' --min-var-freq 0.02'.format(tumor,normal)
+                     ' --min-var-freq 0.02 {}'.format(tumor,normal,varScanParameters)
 
     varscan = env.Command(["Variants/VarScan/{}_{}/01_varscan.indel".format(tumor,normal), \
                            "Variants/VarScan/{}_{}/01_varscan.snp".format(tumor,normal)], \
