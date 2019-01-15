@@ -33,6 +33,11 @@ def main():
     directoriesTiIgnore = ["Variants", "VCF"]
     variantCallerDirs = {"mutect2":"Mutect2", "mutect":"Mutect", "strelka2":"Strelka2", "varscan":"VarScan"}
 
+    try:
+        variantCallers =  configuration.variantCallers.split(",")
+    except:
+        variantCallers = ["mutect","mutect2","strelka2","varscan"]
+
     for f in os.listdir(os.getcwd()):
         if os.path.isdir(f):
             os.chdir(f)
