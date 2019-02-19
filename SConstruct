@@ -87,7 +87,7 @@ filteringBam = env.Command(["03_mapping-rmdup-cleaned.bam"],[pcrRemoval],filteri
 
 #Table of putative indels
 
-putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator  --fix_misencoded_quality_scores -R /annotations/{} -o $TARGET  -I $SOURCE -nt {}".format(gatk3,reference,processors)
+putativeIndelsTableCMD = "java -Xmx4g -jar {} -T RealignerTargetCreator -R /annotations/{} -o $TARGET  -I $SOURCE -nt {}".format(gatk3,reference,processors)
 putativeIndelsTable = env.Command(["04_realigning.intervals"], [filteringBam], putativeIndelsTableCMD)
 
 #Local realignment around indels
