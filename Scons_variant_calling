@@ -23,7 +23,7 @@ vars = Variables("/working/configuration.py")
 vars.Add('reference', 'The genome reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
 vars.Add('dbsnpVCF','The dbSNP VCF',"dbsnp.vcf.gz")
-vars.Add('cosmic','The Cosmic VCF',"cosmic.vcf")
+vars.Add('cosmic','The Cosmic VCF',"CosmicCodingMuts84.vcf")
 vars.Add('exomeRegions',"The bed file containing exome regions","small.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
@@ -33,36 +33,34 @@ vars.Add('gatk4','The path to GATK4',"/tmp/gatk4/gatk")
 vars.Add('javaOptions','Options to run java',"4")
 vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
 vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
-vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","gnomad.vcf")
+vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","af-only-gnomad.raw.sites.b37.vcf.gz")
 vars.Add('variantCallers',"Variant callers to be used (mutect,mutect2,strelka2)","mutect,mutect2,strelka2,varscan")
 vars.Add('gatk3','The path to gatk3',"/tmp/gatk3/GenomeAnalysisTK.jar")
 
-# MuTect2 Parameters
+# MuTect2 additional parameters
 vars.Add('mutect2Parameters',"Parameters for MuTect2","")
 
-# MuTect Parametes
+# MuTect additional parametes
 vars.Add("mutectParameters", "Parametes for MuTect", "")
-
 
 # VarScan Parameters
 vars.Add('varScanMinCoverage', 'VarScan minimum read depeh at a position to make a call [10]', "10")
 vars.Add('varScanPvalue', "VarScan default p-value threshold for calling variants [1e-01]", "0.1")
 vars.Add('varScanMinVarFreq', "Minimum variant allele frequency threshold [0.20]", "0.2")
-
 vars.Add("varScanParameters", "Parameters to be added to varScan2", "")
-
 
 # snpEff Parameters
 vars.Add("snpeffDir", "SnpEFF directory", "/annotations")
 vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
 
-# ClinVAr Parameters
+# ClinVAr Parameter
 vars.Add("clinvar", "Clinvar VCF file", "clinvar.vcf")
 
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
 env.AppendENVPath('PATH', os.getcwd())
 Decider('timestamp-newer')
+
 
 ####################
 ##### Arguments ####
@@ -112,10 +110,10 @@ variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
 
 
-# Mutect Parameters
+# Mutect additional parameters
 mutectParameters = ARGUMENTS.get("mutectParameters", env["mutectParameters"])
 
-# MuTect2 Parameters
+# MuTect2 additional parameters
 mutect2Parameters = ARGUMENTS.get("mutect2Parameters",env["mutect2Parameters"])
 
 # VarScan Parameters
@@ -463,12 +461,22 @@ lastStepOfVariantCallerList = []
 lastStepOfIndelCallerList = []
 
 
-lastStepOfVariantCaller = {"varscan":copyVarscanAnnotated[0], "strelka2":copyStrelka2SnpsAnnotated[0],
-                           "mutect2":copyMutect2AnnotatedSnps[0], "mutect":copyMutectAnnotatedVariants[0]}
+lastStepOfVariantCaller = {}
+lastStepOfIndelVariantCaller = {}
+for variantCaller in variantCallersList:
+    if variantCaller == "varscan":
+        lastStepOfVariantCaller["varscan"] = copyVarscanAnnotated[0]
+        lastStepOfIndelVariantCaller["varscan"] = copyVarscanAnnotatedIndels[0]
+    if variantCaller == "strelka2":
+        lastStepOfVariantCaller["strelka2"] = copyStrelka2SnpsAnnotated[0]
+        lastStepOfIndelVariantCaller["strelka2"] = copyStrelka2IndelsAnnotated[0]
+    if variantCaller == "mutect2":
+        lastStepOfVariantCaller["mutect2"] = copyMutect2AnnotatedSnps[0]
+        lastStepOfIndelVariantCaller["mutect2"] = copyMutect2AnnotatedIndels[0]
+    if variantCaller == "mutect":
+        lastStepOfVariantCaller["mutect"] = copyMutectAnnotatedVariants[0]
 
 
-lastStepOfIndelVariantCaller = {"varscan":copyVarscanAnnotatedIndels[0], "strelka2":copyStrelka2IndelsAnnotated[0],
-                                "mutect2":copyMutect2AnnotatedIndels[0]}
 
 for variantCaller in variantCallersList:
     variantCallersString =  variantCallersString + " --variant:{}  /working/VCF/{}_{}_{}_snps.vcf ".format(variantCaller,tumor,normal,variantCaller)
@@ -484,7 +492,7 @@ lastStepOfIndelCallerList.sort()
 
 
 
-variantCallerListIndels = variantCallersList[1:]
+variantCallerListIndels = variantCallersList[0:]
 
 variantCallersString = variantCallersString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal, ",".join(variantCallersList))
 combineVCFsSnps = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf".format(tumor,normal)], lastStepOfVariantCallerList, variantCallersString)
