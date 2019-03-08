@@ -9,7 +9,7 @@ All the steps of the pipeline and their dependencies are controlled by [SCons](h
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
 
 
-### Software versions currently used
+# Software versions currently used
 
 | Program        | Description| Version |
 | ------------- |:-------------| :-------------| 
@@ -21,3 +21,64 @@ Three variant calling softwares are used by the pipeline: [Mutect2](https://soft
 [VarScan](http://dkoboldt.github.io/varscan/)| VarScan is a platform-independent software tool developed at the Genome Institute at Washington University to detect variants in NGS data. | 2.4.2 |
 [SnpEff](http://snpeff.sourceforge.net/) | Genomic variant annotations and functional effect prediction toolbox. | 4_3t |
 [bedtools](https://bedtools.readthedocs.io/en/latest/)|Collectively, the bedtools utilities are a swiss-army knife of tools for a wide-range of genomics analysis tasks. | 2.17.0 |
+
+
+# Databases currently used
+
+iWhale uses databases and sequences indicated in the table below. Many of these sequence files should be indexed. We provide a bash script that do all the steps, from download to index.
+
+| Sequences or Databases | Description| Version |
+| ------------- |:-------------| :-------------| 
+| [Human genome database](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/) |Feb. 2009 assembly of the human genome (hg19,GRCh37 Genome Reference Consortium Human Reference 37|  hg19 or GRCh37|
+|[dbSNP](https://www.ncbi.nlm.nih.gov/snp)| dbSNP contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions | All_20180418.vcf.gz |
+
+
+# Getting database files and indexing by yourself
+
+All commands are launch from the directory containing the downloaded data. **Many of the command take a LOT OF TIME to conclude**.
+
+BWA indexing of Human genome. It produces many files:
+- reference.fa.amb
+- reference.fa.ann
+- reference.fa.bwt
+- reference.fa.pac
+- reference.fa.sa
+
+This step takes a lot of time:
+
+```
+bwa index reference.fa
+```
+
+Index of the FASTA file with human genome data for picard. The produced files is:
+ - reference.dict
+
+```
+java -jar ~/local/picard.jar CreateSequenceDictionary R=reference.fa O=reference.dict
+```
+
+Creation of the reference.fa.fai index. The produced files is:
+ - reference.fa.fai
+```
+samtools faidx reference.fa
+```
+ 
+dbSNP download:
+```
+wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_20180418.vcf.gz 
+```
+
+Removing chr from dbSNP downloaded file (from chr1 to 1)
+```
+gunzip All_20180418.vcf.gz
+```
+
+
+Indexing dbSNP VCF with tabix. Need to install tabix in your computer. Produced file:
+ - All_20180418.vcf.gz.tbi
+ 
+ This step takes a lot of time
+ 
+```
+tabix -fp vcf  All_20180418.vcf.gz
+```
