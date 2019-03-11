@@ -30,7 +30,9 @@ iWhale uses databases and sequences indicated in the table below. Many of these 
 | Sequences or Databases | Description| Version |
 | ------------- |:-------------| :-------------| 
 | [Human genome database](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/) |Feb. 2009 assembly of the human genome (hg19,GRCh37 Genome Reference Consortium Human Reference 37|  hg19 or GRCh37|
-|[dbSNP](https://www.ncbi.nlm.nih.gov/snp)| dbSNP contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions | All_20180418.vcf.gz |
+|[dbSNP](https://www.ncbi.nlm.nih.gov/snp)| dbSNP contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions | All_20180418.vcf.gz|
+|[gnomAD](https://gnomad.broadinstitute.org/)| The Genome Aggregation Database (gnomAD), developed by an international coalition of investigators, with the goal of aggregating and harmonizing both exome and genome sequencing data from a wide variety of large-scale sequencing projects |2018-05-22|
+|[SnpEff GRCh37](http://snpeff.sourceforge.net/index.html)| SnpEff annotation for the human genome reference genome GRCh37)| GRCh37 |
 
 
 # Getting database files and indexing by yourself
@@ -82,3 +84,10 @@ Indexing dbSNP VCF with tabix. Need to install tabix in your computer. Produced 
 ```
 tabix -fp vcf  All_20180418.vcf.gz
 ```
+
+Download of gnomAD data from [http://bioinfo5pilm46.mit.edu/software/GATK/resources/](http://bioinfo5pilm46.mit.edu/software/GATK/resources/)
+```
+wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf
+wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf.tbi
+```
+
