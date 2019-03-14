@@ -33,13 +33,16 @@ iWhale uses databases and sequences indicated in the table below. Many of these 
 |[dbSNP](https://www.ncbi.nlm.nih.gov/snp)| dbSNP contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions | All_20180418.vcf.gz|
 |[gnomAD](https://gnomad.broadinstitute.org/)| The Genome Aggregation Database (gnomAD), developed by an international coalition of investigators, with the goal of aggregating and harmonizing both exome and genome sequencing data from a wide variety of large-scale sequencing projects |2018-05-22|
 |[SnpEff GRCh37](http://snpeff.sourceforge.net/index.html)| SnpEff annotation for the human genome reference genome GRCh37)| GRCh37 |
+|[ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)| ClinVar aggregates information about genomic variation and its relationship to human health |20190311|
 
 
 # Getting database files and indexing by yourself
 
 All commands are launch from the directory containing the downloaded data. **Many of the command take a LOT OF TIME to conclude**.
 
-BWA indexing of Human genome. It produces many files:
+### BWA indexing of Human genome.
+
+It produces many files:
 - reference.fa.amb
 - reference.fa.ann
 - reference.fa.bwt
@@ -52,31 +55,41 @@ This step takes a lot of time:
 bwa index reference.fa
 ```
 
-Index of the FASTA file with human genome data for picard. The produced files is:
+### Index of the FASTA file with human genome data for picard.
+
+The produced files is:
  - reference.dict
 
 ```
 java -jar ~/local/picard.jar CreateSequenceDictionary R=reference.fa O=reference.dict
 ```
 
-Creation of the reference.fa.fai index. The produced files is:
+### Creation of the reference.fa.fai index.
+
+The produced files is:
  - reference.fa.fai
+
 ```
 samtools faidx reference.fa
 ```
  
-dbSNP download:
+### dbSNP download:
+
 ```
 wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_20180418.vcf.gz 
 ```
 
-Removing chr from dbSNP downloaded file (from chr1 to 1)
+### Removing chr from dbSNP downloaded file (from chr1 to 1)
+
 ```
 gunzip All_20180418.vcf.gz
 ```
 
 
-Indexing dbSNP VCF with tabix. Need to install tabix in your computer. Produced file:
+### Indexing dbSNP VCF with tabix.
+
+Need to install tabix in your computer.
+Produced file:
  - All_20180418.vcf.gz.tbi
  
  This step takes a lot of time
@@ -85,9 +98,24 @@ Indexing dbSNP VCF with tabix. Need to install tabix in your computer. Produced 
 tabix -fp vcf  All_20180418.vcf.gz
 ```
 
-Download of gnomAD data from [http://bioinfo5pilm46.mit.edu/software/GATK/resources/](http://bioinfo5pilm46.mit.edu/software/GATK/resources/)
+### Download of gnomAD data
+
+Download gnomAD data from [http://bioinfo5pilm46.mit.edu/software/GATK/resources/](http://bioinfo5pilm46.mit.edu/software/GATK/resources/)
 ```
 wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf
 wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf.tbi
+```
+
+### Download of ClinVar data
+
+Download of ClinVar data from [ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/](ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/).
+Obtained files:
+ - clinvar_20190311.vcf.gz
+ - clinvar_20190311.vcf.gz.tbi 
+ 
+Their date portion could be different, if so, remember to put the right filename in the configuration.py file:
+
+```
+clinvar = "clinvar_20190311.vcf.gz"
 ```
 
