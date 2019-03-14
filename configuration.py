@@ -11,13 +11,14 @@ reference = "reference.fa"
 cosmic = "CosmicCodingMuts_v82.vcf"
 
 # dbSNP database in VCF format
-dbsnpVCF = "dbSNP_v150_20170710_noCHR.vcf.gz"
+#dbsnpVCF = "dbSNP_v150_20170710_noCHR.vcf.gz"
+dbsnpVCF = "All_20180418.vcf.gz"
 
-# ClinVar in VCF format
-clinvar = "clinvar.vcf"
+# ClinVar in VCF compressed format
+clinvar = "clinvar_20190311.vcf.gz"
 
 # Exome regions in bed format
-exomeRegions = "SureSelect_Human_All_Exon_UTR_V5.bed"
+exomeRegions = "exome_regions.bed"
 
 # Genome aggregation database gnomAD in VCF format
 gnomadVCF = "af-only-gnomad.raw.sites.b37.vcf.gz"

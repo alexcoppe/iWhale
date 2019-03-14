@@ -24,7 +24,7 @@ vars.Add('reference', 'The genome reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
 vars.Add('dbsnpVCF','The dbSNP VCF',"dbsnp.vcf.gz")
 vars.Add('cosmic','The Cosmic VCF',"CosmicCodingMuts84.vcf")
-vars.Add('exomeRegions',"The bed file containing exome regions","small.bed")
+vars.Add('exomeRegions',"The bed file containing exome regions","exome_regions.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
 vars.Add('mutect','The path to mutect',"/tmp/mutect-1.1.7.jar")
@@ -54,7 +54,7 @@ vars.Add("snpeffDir", "SnpEFF directory", "/annotations")
 vars.Add("snpeffGenomeVersion", "Genome version to be used by snpEff (like GRCh37.75)", "GRCh37.75")
 
 # ClinVAr Parameter
-vars.Add("clinvar", "Clinvar VCF file", "clinvar.vcf")
+vars.Add("clinvar", "Clinvar compressed VCF file", "clinvar_20190311.vcf.gz")
 
 
 env = Environment(ENV = os.environ, SHELL = '/bin/bash', variables = vars)
