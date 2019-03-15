@@ -22,8 +22,8 @@ vars = Variables("/working/configuration.py")
 
 vars.Add('reference', 'The genome reference file',"reference.fa")
 vars.Add('processors', 'Number of CPUs to be used', "2")
-vars.Add('dbsnpVCF','The dbSNP VCF',"dbsnp.vcf.gz")
-vars.Add('cosmic','The Cosmic VCF',"CosmicCodingMuts84.vcf")
+vars.Add('dbsnpVCF','The dbSNP VCF',"All_20180418.vcf.gz")
+vars.Add('cosmic','The Cosmic VCF',"CosmicCodingMuts.vcf.gz")
 vars.Add('exomeRegions',"The bed file containing exome regions","exome_regions.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
@@ -158,7 +158,7 @@ if "mutect" in variantCallersList:
 
 
     # Annotation with ClinVar
-    mutectClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    mutectClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN  {}  $SOURCE  > $TARGET".format(clinvar)
     mutectClinvar = env.Command(["Variants/Mutect/{}_{}/03_mutect_clinvar.vcf".format(tumor,normal)], [mutectEFF], mutectClinvarCMD)
 
 
@@ -200,7 +200,7 @@ if "mutect2" in variantCallersList:
 
 
     # Annotation with ClinVar
-    mutect2ClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    mutect2ClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN {}  $SOURCE  > $TARGET".format(clinvar)
     mutect2Clinvar = env.Command(["Variants/Mutect2/{}_{}/04_mutect2_clinvar.vcf".format(tumor,normal)], [mutect2EFF], mutect2ClinvarCMD)
 
 
@@ -279,10 +279,10 @@ if "strelka2" in variantCallersList:
 
 
     # Annotation with ClinVar
-    strelka2clinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    strelka2clinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN  {}  $SOURCE  > $TARGET".format(clinvar)
     strelka2clinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_snvs_clinvar.vcf".format(tumor,normal)], [strelka2EFF], strelka2clinvarCmd)
 
-    strelka2indelsclinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    strelka2indelsclinvarCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN  {}  $SOURCE  > $TARGET".format(clinvar)
     strelka2indelsclinvar = env.Command(["Variants/Strelka2/{}_{}/04_strelka2_indels_clinvar.vcf".format(tumor,normal)], [strelka2indelsEFF], strelka2indelsclinvarCmd)
 
     # Cosmic coding variants annotation
@@ -413,10 +413,10 @@ if "varscan" in variantCallersList:
 
 
     # Annotation with ClinVar
-    varscanclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    varscanclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN  {}  $SOURCE  > $TARGET".format(clinvar)
     varscanclinvar = env.Command(["Variants/VarScan/{}_{}/05_varscan_snp_clinvar.vcf".format(tumor,normal)], [varscansnpEFF], varscanclinvarCMD)
 
-    varscanindelsclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(clinvar)
+    varscanindelsclinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN {}  $SOURCE  > $TARGET".format(clinvar)
     varscanindelsclinvar = env.Command(["Variants/VarScan/{}_{}/05_varscan_indels_clinvar.vcf".format(tumor,normal)], [varscanindelsEFF], varscanindelsclinvarCMD)
 
     # Cosmic coding variants annotation
