@@ -61,7 +61,10 @@ def main():
             os.chdir("..")
         goodSampleMatches = checkTumorControlMatches("tumor_control_samples.txt")
         if goodSampleMatches == True:
-            variantCallers =  configuration.variantCallers.split(",")
+            try:
+                variantCallers =  configuration.variantCallers.split(",")
+            except:
+                variantCallers = ["mutect","mutect2","strelka2","varscan"]
             chosenVariantCallers = [variantCallerDirs.get(item) for item in variantCallers]
             os.system("mkdir Variants")
             os.system("mkdir VCF")
