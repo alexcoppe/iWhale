@@ -31,12 +31,12 @@ def main():
     empty_directories = []
 
     directoriesTiIgnore = ["Variants", "VCF"]
-    variantCallerDirs = {"mutect2":"Mutect2", "mutect":"Mutect", "strelka2":"Strelka2", "varscan":"VarScan"}
+    variantCallerDirs = {"mutect2":"Mutect2", "strelka2":"Strelka2", "varscan":"VarScan"}
 
     try:
         variantCallers =  configuration.variantCallers.split(",")
     except:
-        variantCallers = ["mutect","mutect2","strelka2","varscan"]
+        variantCallers = ["mutect2","strelka2","varscan"]
 
     for f in os.listdir(os.getcwd()):
         if os.path.isdir(f):
@@ -64,7 +64,7 @@ def main():
             try:
                 variantCallers =  configuration.variantCallers.split(",")
             except:
-                variantCallers = ["mutect","mutect2","strelka2","varscan"]
+                variantCallers = ["mutect2","strelka2","varscan"]
             chosenVariantCallers = [variantCallerDirs.get(item) for item in variantCallers]
             os.system("mkdir Variants")
             os.system("mkdir VCF")

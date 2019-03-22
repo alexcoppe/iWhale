@@ -1,5 +1,5 @@
 # Variant callers to be used, separated by ,
-variantCallers = "mutect,mutect2,strelka2,varscan"
+variantCallers = "mutect2,strelka2,varscan"
 
 # Computational resources
 processors = 3
@@ -48,7 +48,7 @@ mutect2Parameters = "--dont-use-soft-clipped-bases --output-mode EMIT_VARIANTS_O
 varScanMinCoverage = 10
 # VarScan --pvalue
 varScanPvalue = 0.05
-# Varscan --min-var-freq 0.02 
+# Varscan --min-var-freq 0.02
 varScanMinVarFreq = 0.02
 
 

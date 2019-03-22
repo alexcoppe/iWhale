@@ -27,21 +27,17 @@ vars.Add('cosmic','The Cosmic VCF',"CosmicCodingMuts.vcf.gz")
 vars.Add('exomeRegions',"The bed file containing exome regions","exome_regions.bed")
 vars.Add('tumor',"Tumor sample","")
 vars.Add('normal',"Normal sample","")
-vars.Add('mutect','The path to mutect',"/tmp/mutect-1.1.7.jar")
 vars.Add('contamination','Computation of predicted contamination in tumor sample by CalculateContamination of GATK4 (y/n)',"n")
 vars.Add('gatk4','The path to GATK4',"/tmp/gatk4/gatk")
 vars.Add('javaOptions','Options to run java',"4")
 vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
 vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
 vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","af-only-gnomad.raw.sites.b37.vcf.gz")
-vars.Add('variantCallers',"Variant callers to be used (mutect,mutect2,strelka2)","mutect,mutect2,strelka2,varscan")
+vars.Add('variantCallers',"Variant callers to be used (mutect2,strelka2,varscan)","mutect2,strelka2,varscan")
 vars.Add('gatk3','The path to gatk3',"/tmp/gatk3/GenomeAnalysisTK.jar")
 
 # MuTect2 additional parameters
 vars.Add('mutect2Parameters',"Parameters for MuTect2","")
-
-# MuTect additional parametes
-vars.Add("mutectParameters", "Parametes for MuTect", "")
 
 # VarScan Parameters
 vars.Add('varScanMinCoverage', 'VarScan minimum read depeh at a position to make a call [10]', "10")
@@ -87,8 +83,6 @@ tumor = ARGUMENTS.get("tumor",env["tumor"])
 
 normal = ARGUMENTS.get("normal",env["normal"])
 
-mutect = ARGUMENTS.get("mutect",env["mutect"])
-
 contamination = ARGUMENTS.get("contamination",env["contamination"])
 
 gatk4 = ARGUMENTS.get("gatk4",env["gatk4"])
@@ -108,10 +102,6 @@ gnomadVCF = "/annotations/" + gnomadVCF
 
 variantCallers = ARGUMENTS.get("variantCallers",env["variantCallers"])
 variantCallersList = variantCallers.split(",")
-
-
-# Mutect additional parameters
-mutectParameters = ARGUMENTS.get("mutectParameters", env["mutectParameters"])
 
 # MuTect2 additional parameters
 mutect2Parameters = ARGUMENTS.get("mutect2Parameters",env["mutect2Parameters"])
@@ -140,39 +130,6 @@ if contamination == "y" or contamination == "yes":
 
     calculateContaminationCMD = "${SOURCES[0]} CalculateContamination -I ${SOURCES[1]} -O $TARGET"
     calculateContamination = env.Command(["Variants/Mutect2/{}_{}/00_contamination.table".format(tumor,normal)],[gatk4,getPileupSummaries],calculateContaminationCMD)
-
-#####################################
-#### Variant Calling with MuTect ####
-#####################################
-
-if "mutect" in variantCallersList:
-    muTectCMD = "/tmp/java-7-oracle/bin/java " + javaOptions + " -jar ${SOURCES[0]} --analysis_type MuTect --reference_sequence ${SOURCES[1]} --dbsnp ${SOURCES[2]} --cosmic ${SOURCES[3]} --intervals ${SOURCES[4]} --input_file:normal ${SOURCES[5]}/07_recalibrated.bam --input_file:tumor ${SOURCES[6]}/07_recalibrated.bam --out ${TARGETS[0]} --coverage_file ${TARGETS[1]} --vcf ${TARGETS[2]}" + " {}".format(mutectParameters)
-    muTect = env.Command(["Variants/Mutect/{}_{}/01_variants.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_coverage.wig.txt".format(tumor,normal),"Variants/Mutect/{}_{}/01_mutect.vcf".format(tumor,normal)],[mutect,reference,dbsnpVCF,cosmic,exomeRegions,normal,tumor, "{}/07_recalibrated.bam".format(tumor), "{}/07_recalibrated.bam".format(normal)],muTectCMD)
-
-    
-    #Annotation by snpEff
-    mutectEFFCMD = "java -jar /tmp/snpEff/snpEff.jar eff -v {} -stats Variants/Mutect/{}_{}/snpEff_summary.html -dataDir {} $SOURCE > $TARGET".format(snpeffGenomeVersion,tumor,normal,snpeffDir)
-    mutectEFF = env.Command(["Variants/Mutect/{}_{}/02_mutect_snpeff.vcf".format(tumor,normal), 
-				"Variants/Mutect/{}_{}/snpEff_summary.genes.txt".format(tumor,normal),
-                                "Variants/Mutect/{}_{}/snpEff_summary.html".format(tumor,normal)],[muTect[2]],mutectEFFCMD)
-
-
-    # Annotation with ClinVar
-    mutectClinvarCMD = "java -Xmx2g -jar /tmp/snpEff/SnpSift.jar annotate -info CLNSIG,CLNDN  {}  $SOURCE  > $TARGET".format(clinvar)
-    mutectClinvar = env.Command(["Variants/Mutect/{}_{}/03_mutect_clinvar.vcf".format(tumor,normal)], [mutectEFF], mutectClinvarCMD)
-
-
-    # Cosmic coding variants annotation
-    mutectCosmicCodingCmd = "java -Xmx4g -jar /tmp/snpEff/SnpSift.jar annotate {}  $SOURCE  > $TARGET".format(cosmic)
-    mutectCosmicCoding = env.Command(["Variants/Mutect/{}_{}/04_mutect_cosmic.vcf".format(tumor,normal)], [mutectClinvar], mutectCosmicCodingCmd)
-
-    mutectFilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv  -e > $TARGET"
-    mutectFiltering = env.Command(["Variants/Mutect/{}_{}/05_mutect_filtered.vcf".format(tumor,normal)], [mutectCosmicCoding], mutectFilteringCMD)
-
-
-    # Copy latest created .vcf file to VCF directory
-    copyMutectAnnotatedVariantsCMD = "cp $SOURCE $TARGET"
-    copyMutectAnnotatedVariants = env.Command(["VCF/{}_{}_mutect_snps.vcf".format(tumor,normal)], [mutectFiltering], copyMutectAnnotatedVariantsCMD)
 
 #######################################
 ##### Variant Calling with MuTect2 ####
@@ -322,23 +279,9 @@ if "strelka2" in variantCallersList:
     copyStrelka2IndelsAnnotatedCMD = "cp $SOURCE $TARGET"
     copyStrelka2IndelsAnnotated = env.Command(["VCF/{}_{}_strelka2_indels.vcf".format(tumor,normal)], [strelka2GenotypeConversionIndels], copyStrelka2IndelsAnnotatedCMD)
 
-    # Filtering variants
-    #strelka2FilteringCMD = "python /tmp/mutect-vcf-selector.py -f $SOURCE -c /annotations/cancer_gene_census.csv -e > $TARGET"
-    #strelka2Filtering = env.Command(["Variants/Strelka2/{}_{}/08_strelka2_snvs_filtered.vcf".format(tumor,normal)], [strelka2gnomad], strelka2FilteringCMD)
-
-
-
-
-
-
- #   updateGTStrelka2SnpCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t snps > $TARGET"
-#    updateGTStrelka2Snp = env.Command(["{}_strelka2_gt_snvs.vcf".format(tumorName)],[selectVariantsStrelka2snvs],updateGTStrelka2SnpCMD)
-
- #   updateGTStrelka2IndelCMD = "python /blackhole/andrea/Script/Scons/MultiVarCaller/update_GT_Strelka2.py -v $SOURCE -t indels > $TARGET"
-  #  updateGTStrelka2Indel = env.Command(["{}_strelka2_gt_indels.vcf".format(tumorName)],[selectVariantsStrelka2indels],updateGTStrelka2IndelCMD)
-
-   # combineVariantsStrelka2CMD = "{} -jar".format(java8)+" ${SOURCES[0]} -T CombineVariants -R ${SOURCES[1]}"+" --variant:strelka2_snv ${SOURCES[2]} --variant:strelka2_indel ${SOURCES[3]} -o $TARGET -genotypeMergeOptions PRIORITIZE -priority strelka2_snv,strelka2_indel"
-   # combineVariantsStrelka2 = env.Command(["{}_strelka2_pass.vcf".format(tumorName)],[gatk3,reference,updateGTStrelka2Snp,updateGTStrelka2Indel],combineVariantsStrelka2CMD)
+######################################
+#### Variant calling with VarScan ####
+######################################
 
 if "varscan" in variantCallersList:
 
@@ -473,19 +416,13 @@ for variantCaller in variantCallersList:
     if variantCaller == "mutect2":
         lastStepOfVariantCaller["mutect2"] = copyMutect2AnnotatedSnps[0]
         lastStepOfIndelVariantCaller["mutect2"] = copyMutect2AnnotatedIndels[0]
-    if variantCaller == "mutect":
-        lastStepOfVariantCaller["mutect"] = copyMutectAnnotatedVariants[0]
-
 
 
 for variantCaller in variantCallersList:
     variantCallersString =  variantCallersString + " --variant:{}  /working/VCF/{}_{}_{}_snps.vcf ".format(variantCaller,tumor,normal,variantCaller)
     lastStepOfVariantCallerList.append(lastStepOfVariantCaller.get(variantCaller))
-    
-    if variantCaller != "mutect":
-        variantCallersIndelsString = variantCallersIndelsString + " --variant:{} /working/VCF/{}_{}_{}_indels.vcf ".format(variantCaller,tumor,normal,variantCaller)
-        lastStepOfIndelCallerList.append(lastStepOfIndelVariantCaller.get(variantCaller)) 
-
+    variantCallersIndelsString = variantCallersIndelsString + " --variant:{} /working/VCF/{}_{}_{}_indels.vcf ".format(variantCaller,tumor,normal,variantCaller)
+    lastStepOfIndelCallerList.append(lastStepOfIndelVariantCaller.get(variantCaller))
     
 variantCallersList.sort()
 lastStepOfIndelCallerList.sort()
@@ -494,8 +431,9 @@ lastStepOfIndelCallerList.sort()
 
 variantCallerListIndels = variantCallersList[0:]
 
-variantCallersString = variantCallersString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal, ",".join(variantCallersList))
-combineVCFsSnps = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf".format(tumor,normal)], lastStepOfVariantCallerList, variantCallersString)
+variantCallersStringCMD = variantCallersString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal, ",".join(variantCallersList))
+combineVCFsSnps = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_snps.vcf".format(tumor,normal)], lastStepOfVariantCallerList, variantCallersStringCMD)
 
 variantCallersIndelsString = variantCallersIndelsString + " -o VCF/Combined_VCFs_by_sample/{}_{}_merged_indels.vcf  -genotypeMergeOptions PRIORITIZE -priority {}".format(tumor,normal,",".join(variantCallerListIndels))
+
 combineVCFsIndels = env.Command(["VCF/Combined_VCFs_by_sample/{}_{}_merged_indels.vcf".format(tumor,normal)], lastStepOfIndelCallerList, variantCallersIndelsString )

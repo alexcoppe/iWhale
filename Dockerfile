@@ -16,7 +16,6 @@ ADD https://github.com/broadinstitute/picard/releases/download/${picard_version}
 ADD http://javadl.oracle.com/webapps/download/AutoDL?BundleId=230532_2f38c3b165be4555a1fa6e98c45e0808 /tmp/java.tar.gz
 ADD https://github.com/broadinstitute/gatk/releases/download/${gatk4_version}/gatk-${gatk4_version}.zip /tmp/
 ADD "https://software.broadinstitute.org/gatk/download/auth?package=GATK-archive&version=${gatk3_version}-0-gf15c1c3ef" /tmp/gatk3.bz2
-ADD https://software.broadinstitute.org/gatk/download/auth?package=M1 /tmp/mutect.zip
 ADD http://compgen.bio.unipd.it/downloads/java-7-oracle.tar.gz /tmp/java7.tar.gz
 ADD https://github.com/Illumina/strelka/releases/download/v${strelka2_version}/strelka-${strelka2_version}.release_src.tar.bz2 /tmp/
 ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/VarScan.v${varscan_version}.jar /tmp/
@@ -50,7 +49,6 @@ RUN apt-get update \
     && mv gatk-${gatk4_version} gatk4 \
     && tar xvjf gatk3.bz2 \
     && mv GenomeAnalysisTK-${gatk3_version}-0-gf15c1c3ef gatk3 \
-    && unzip /tmp/mutect.zip \
     && tar -xjf strelka-${strelka2_version}.release_src.tar.bz2 \
     && mkdir build && cd build \
     && ../strelka-${strelka2_version}.release_src/configure --jobs=4 --prefix=/tmp/strelka \
@@ -58,7 +56,7 @@ RUN apt-get update \
     && cd /tmp/ && mv VarScan.v${varscan_version}.jar VarScan.jar \
     && cd /tmp/ \
     && unzip snpEff_v${snpeff_version}_core.zip \
-    && rm -rf v${bedtools_version}.tar.gz bedtools-${bedtools_version} && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm /tmp/mutect.zip  && rm snpEff_v${snpeff_version}_core.zip  \
+    && rm -rf v${bedtools_version}.tar.gz bedtools-${bedtools_version} && rm /tmp/bwa-${bwa_version}.tar.bz2 && rm -rf /tmp/bwa-${bwa_version} && rm /tmp/java.tar.gz && rm /tmp/gatk-${gatk4_version}.zip && rm /tmp/gatk3.bz2 && rm snpEff_v${snpeff_version}_core.zip  \
     && rm /tmp/java7.tar.gz && rm -rf strelka-${strelka2_version}.release_src.tar.bz2 strelka-${strelka2_version}.release_src
 
 WORKDIR /working
