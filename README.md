@@ -1,5 +1,5 @@
 # :whale: iWhale
-### Dockerized Whole Exome Sequencing (WES) pipeline.
+### Dockerized Whole Exome Sequencing (WES) pipeline
 
 A pipeline for Whole Exome Sequencing (WES) variants identification in mathced tumor-normal samples. It runs into a [Docker](https://www.docker.com) container, ready to be downloaded and used on any operating system 
 supported by [Docker](https://www.docker.com/).
@@ -7,6 +7,35 @@ supported by [Docker](https://www.docker.com/).
 All the steps of the pipeline and their dependencies are controlled by [SCons](https://scons.org/) so that in case of any stop, like killing by error or even shutting down the computer, it will automatically resume the analysis from the last run process.
 
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
+
+# iWhale usage
+
+The first thing to do is to download iWhale from [Docker Hub](https://hub.docker.com/):
+
+```
+docker pull alexcoppe/iWhale
+```
+The working directory has to contain the following elements:
+- two directories for each sample (one for tumor and one for control sample) including the two fastq files
+- a text file called **tumor_control_samples.txt**
+- a python file called **configuration.py**
+
+The working directory **must not contain** other directories except the ones of the samples indicated above
+
+#### Sample directories structure
+Each sample must be in its own directory containing the two paired-end gz-compressed fastq files. The files **must** be called **1.fastq.gz** and **2.fastq.gz** 
+
+#### tumor_control_samples.txt file structure
+This is a simple text file organized by two columns separated by tab: in the first column there are tumor directories names and in the second one the matched control directories names 
+
+```
+tumor_sample1 control_sample1
+tumor_sample2 control_sample2
+...
+```
+
+#### configuration.py file structure
+This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py?token=AV00ooKqBg4p7Us1Lnsk6GLpgw3fL3mUks5cnOYCwA%3D%3D)
 
 
 # Software versions currently used
