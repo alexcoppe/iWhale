@@ -8,7 +8,7 @@ All the steps of the pipeline and their dependencies are controlled by [SCons](h
 
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
 
-# iWhale usage
+# iWhale data preparation
 
 The first thing to do is to download iWhale from [Docker Hub](https://hub.docker.com/):
 
@@ -22,10 +22,10 @@ The working directory has to contain the following elements:
 
 The working directory **must not contain** other directories except the ones of the samples indicated above
 
-#### Sample directories structure
+### Sample directories structure
 Each sample must be in its own directory containing the two paired-end gz-compressed fastq files. The files **must** be called **1.fastq.gz** and **2.fastq.gz** 
 
-#### tumor_control_samples.txt file structure
+### tumor_control_samples.txt file structure
 This is a simple text file organized by two columns separated by tab: in the first column there are tumor directories names and in the second one the matched control directories names 
 
 ```
@@ -34,9 +34,23 @@ tumor_sample2 control_sample2
 ...
 ```
 
-#### configuration.py file structure
+### configuration.py file structure
 This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py?token=AV00ooKqBg4p7Us1Lnsk6GLpgw3fL3mUks5cnOYCwA%3D%3D)
 
+### Annotation data download
+Annotation data can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section)
+
+# Launching iWhale
+
+This is the command to launch iWhale:
+```
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/annotations iwhale 
+```
+- --rm removes the container (it is optional)
+- -it used for interactive processes (like a shell)
+- --name used to name the container. If you do not assign a container name with the --name option, then the daemon generates a random string name for you
+- -v used to share the two folders that iWhale needs: the **working directory** (used in the example the current directory by $(pwd)) and the **folder including the databases files** (in the example, /home/user/databases)   
+- iwhale is the name of the docker image to be run
 
 # Software versions currently used
 
