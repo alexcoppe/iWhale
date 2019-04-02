@@ -8,6 +8,8 @@ All the steps of the pipeline and their dependencies are controlled by [SCons](h
 
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
 
+An image of the iWhale pipeline diagram is available [here](https://github.com/alexcoppe/iWhale/blob/master/iwhale.png?raw=true)
+
 # iWhale data preparation
 
 The first thing to do is to download iWhale from [Docker Hub](https://hub.docker.com/):
