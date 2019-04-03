@@ -40,7 +40,9 @@ tumor_sample2 control_sample2
 This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py)
 
 ### Annotation data download
-Annotation data can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section)
+Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
+- *CosmicCodingMuts.vcf*
+- *cancer_gene_census.csv*
 
 # Launching iWhale
 
