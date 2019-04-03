@@ -41,7 +41,7 @@ This file is essential and can be empty. It can be used to set parameters of the
 
 ### Annotation data download
 Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
-- *CosmicCodingMuts.vcf*
+- *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
 
 # Launching iWhale
@@ -184,4 +184,8 @@ Their date portion could be different, if so, remember to put the right filename
 ```
 clinvar = "clinvar_20190311.vcf.gz"
 ```
+### Download of Cosmic data
 
+COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
+- *CosmicCodingMuts.vcf.gz*
+- *cancer_gene_census.csv*
