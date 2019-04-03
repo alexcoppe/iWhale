@@ -37,7 +37,7 @@ tumor_sample2 control_sample2
 ```
 
 ### configuration.py file structure
-This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py?token=AV00ooKqBg4p7Us1Lnsk6GLpgw3fL3mUks5cnOYCwA%3D%3D)
+This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py)
 
 ### Annotation data download
 Annotation data can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section)
@@ -53,6 +53,25 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 - --name used to name the container. If you do not assign a container name with the --name option, then the daemon generates a random string name for you
 - -v used to share the two folders that iWhale needs: the **working directory** (used in the example the current directory by $(pwd)) and the **folder including the databases files** (in the example, /home/user/databases)   
 - iwhale is the name of the docker image to be run
+
+# Output 
+The final results are obtained by merging the VCFs produced by each chosen variant caller (MuTect2, VarScan2,Strelka2) and are located in the *Combined_VCFs_by_sample* directory included in the *VCF* directory. For each matched-samples pair, the called snps and indels are put into two different vcf files. In particular their name will be *tumor_control*\_merged\_*typeofvariants*.vcf. The index files of VCFs are also present in the directory. Here is an example of results:
+
+```
+[root@iwhale Combined_VCFs_by_sample] ls -l
+
+-rw-r--r-- 1 root root 46578 Mar 15 15:24 5_6_merged_indels.vcf
+-rw-r--r-- 1 root root  1477 Mar 15 15:24 5_6_merged_indels.vcf.idx
+-rw-r--r-- 1 root root 54011 Mar 15 15:24 5_6_merged_snps.vcf
+-rw-r--r-- 1 root root  3354 Mar 15 15:24 5_6_merged_snps.vcf.idx
+-rw-r--r-- 1 root root 46578 Mar 15 15:25 7_8_merged_indels.vcf
+-rw-r--r-- 1 root root  1477 Mar 15 15:25 7_8_merged_indels.vcf.idx
+-rw-r--r-- 1 root root 54011 Mar 15 15:25 7_8_merged_snps.vcf
+-rw-r--r-- 1 root root  3354 Mar 15 15:25 7_8_merged_snps.vcf.idx
+
+```
+The VCFs produced by each variant caller are present in the upper directory called *VCF*.
+The *Variants* directory contains the intermediate files produced by the pipeline divided by software and pair of matched-samples directories.
 
 # Software versions currently used
 
