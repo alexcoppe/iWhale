@@ -25,10 +25,12 @@ The working directory has to contain the following elements:
 The working directory **must not contain** other directories except the ones of the samples indicated above
 
 ### Sample directories structure
-Each sample must be in its own directory containing the two paired-end gz-compressed fastq files. The files **must** be called **1.fastq.gz** and **2.fastq.gz** 
+Each sample must be in its own directory containing the two paired-end gz-compressed fastq files. The files **must** be called:
+- **1.fastq.gz**
+- **2.fastq.gz** 
 
 ### tumor_control_samples.txt file structure
-This is a simple text file organized by two columns separated by tab: in the first column there are tumor directories names and in the second one the matched control directories names 
+The file **tumor_control_samples.txt** is a simple text file organized by two columns separated by tab: in the first column there are tumor directories names and in the second one the matched control directories names 
 
 ```
 tumor_sample1 control_sample1
@@ -37,7 +39,7 @@ tumor_sample2 control_sample2
 ```
 
 ### configuration.py file structure
-This file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py)
+The **configuration.py** file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py)
 
 ### Annotation data download
 Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
@@ -106,6 +108,53 @@ iWhale uses databases and sequences indicated in the table below. Many of these 
 
 All commands are launch from the directory containing the downloaded data. **Many of the command take a LOT OF TIME to conclude**.
 
+### Download and setting of reference genome
+
+The reference genome can be downloaded from [http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/) by using these commands:
+
+```
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr1.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr2.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr3.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr4.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr5.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr6.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr7.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr8.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr9.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr10.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr11.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr12.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr13.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr14.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr15.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr16.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr17.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr18.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr19.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr20.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr21.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr22.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrX.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrY.fa.gz
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrM.fa.gz
+
+```
+
+Join all chromosomes into one big FASTA file with all human genome in it and remove **chr** from FASTA headers (like **>chr1** to **>1**)
+
+```
+zcat chr1.fa.gz chr2.fa.gz chr3.fa.gz chr4.fa.gz chr5.fa.gz chr6.fa.gz chr7.fa.gz chr8.fa.gz chr9.fa.gz \
+  chr10.fa.gz chr11.fa.gz chr12.fa.gz chr13.fa.gz chr14.fa.gz chr15.fa.gz chr16.fa.gz chr17.fa.gz \
+  chr18.fa.gz chr19.fa.gz chr20.fa.gz chr21.fa.gz chr22.fa.gz chrX.fa.gz chrY.fa.gz chrM.fa.gz  |  sed 's/>chr/>/' > reference.fa
+
+```
+Then you can remove chromosome files with this command
+
+```
+rm chr*.fa.gz
+```
+
 ### BWA indexing of Human genome.
 
 It produces many files:
@@ -145,12 +194,12 @@ samtools faidx reference.fa
 wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_20180418.vcf.gz 
 ```
 
-### Removing chr from dbSNP downloaded file (from chr1 to 1)
+### Removing *chr* from dbSNP downloaded file (from chr1 to 1)
 
 ```
 gunzip All_20180418.vcf.gz
+cat All_20180418.vcf | sed 's/>chr/>/' | bgzip -c >  All_20180418.vcf.gz
 ```
-
 
 ### Indexing dbSNP VCF with tabix.
 
@@ -170,6 +219,11 @@ Download gnomAD data from [http://bioinfo5pilm46.mit.edu/software/GATK/resources
 ```
 wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf
 wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf.tbi
+```
+The **af-only-gnomad.raw.sites.b37.vcf** must be compressed by *bgzip* and indexed by *tabix*.  
+```
+bgzip af-only-gnomad.raw.sites.b37.vcf
+tabix -fp vcf af-only-gnomad.raw.sites.b37.vcf.gz
 ```
 
 ### Download of ClinVar data
