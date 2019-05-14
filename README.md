@@ -39,7 +39,20 @@ tumor_sample2 control_sample2
 ```
 
 ### configuration.py file structure
-The **configuration.py** file is essential and can be empty. It can be used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py)
+The **configuration.py** file is essential. It is used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py).
+**A very important parameter and the only one you have to specify is the exome regions in bed format** by using the *exomeRegions* parameter. The default parameter is:
+
+```
+exomeRegions = "exome_regions.bed"
+```
+
+**You have to change it to the exome interval used by your sequencing experiment** (SureSelect_Human_All_Exon_V5 in the example below). iWhale **also** needs the gziped version (made by bgzip) of the file and the **.tbi** index done using with these parameters (you need *tabix* and *bgzip* commands):
+
+```
+bgzip -c SureSelect_Human_All_Exon_V5.bed > SureSelect_Human_All_Exon_V5.bed.gz
+tabix -p bed -S 3  SureSelect_Human_All_Exon_V5.bed.gz
+```
+
 
 ### Annotation data download
 Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
@@ -48,7 +61,7 @@ Annotation data, except COSMIC files, can be downloaded from [compgen](http://co
 
 # Launching iWhale
 
-This is the command to launch iWhale:
+The docker's run command is used to mention that we want to create an instance of an image. The image is then called a container. This is the command to launch an iWhale container:
 ```
 docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/annotations iwhale 
 ```
@@ -57,6 +70,18 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 - --name used to name the container. If you do not assign a container name with the --name option, then the daemon generates a random string name for you
 - -v used to share the two folders that iWhale needs: the **working directory** (used in the example the current directory by $(pwd)) and the **folder including the databases files** (in the example, /home/user/databases)   
 - iwhale is the name of the docker image to be run
+- **iwhalexp** is the name of the iWhale docker container while **iwhale** is the name of the image 
+
+# Re-launching iWhale
+
+In case of iWhale accidentally stopped, you have to re-launch the same Docker container that was running before stopping. To do this use the following command:
+
+```
+docker start -a iwhalexp
+```
+
+Obviously the name *iwhalexp* is the same of used by the *docker run* used in the "Launching iWhale" above section
+
 
 # Output 
 The final results are obtained by merging the VCFs produced by each chosen variant caller (MuTect2, VarScan2,Strelka2) and are located in the *Combined_VCFs_by_sample* directory included in the *VCF* directory. For each matched-samples pair, the called snps and indels are put into two different vcf files. In particular their name will be *tumor_control*\_merged\_*typeofvariants*.vcf. The index files of VCFs are also present in the directory. Here is an example of results:
@@ -243,3 +268,8 @@ clinvar = "clinvar_20190311.vcf.gz"
 COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
+
+Making the *.tbi* file:
+```
+tabix -p vcf CosmicCodingMuts.vcf.gz
+```
