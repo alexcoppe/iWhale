@@ -240,16 +240,13 @@ tabix -fp vcf  All_20180418.vcf.gz
 
 ### Download of gnomAD data
 
-Download gnomAD data from [http://bioinfo5pilm46.mit.edu/software/GATK/resources/](http://bioinfo5pilm46.mit.edu/software/GATK/resources/)
+Download gnomAD (version 2.0.2) data. 
+
 ```
-wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf
-wget http://bioinfo5pilm46.mit.edu/software/GATK/resources/af-only-gnomad.raw.sites.b37.vcf.tbi
+wget http://compgen.bio.unipd.it/downloads/gnomad.exomes.r2.0.2.sites.vcf.gz
+wget http://compgen.bio.unipd.it/downloads/gnomad.exomes.r2.0.2.sites.vcf.gz.tbi
 ```
-The **af-only-gnomad.raw.sites.b37.vcf** must be compressed by *bgzip* and indexed by *tabix*.  
-```
-bgzip af-only-gnomad.raw.sites.b37.vcf
-tabix -fp vcf af-only-gnomad.raw.sites.b37.vcf.gz
-```
+The **gnomad.exomes.r2.0.2.sites.vcf.gz** is compressed by *bgzip* and indexed by *tabix*.  
 
 ### Download of ClinVar data
 
