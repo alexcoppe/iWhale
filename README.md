@@ -46,7 +46,13 @@ The **configuration.py** file is essential. It is used to set parameters of the 
 exomeRegions = "exome_regions.bed"
 ```
 
-**You have to change it to the exome interval used by your sequencing experiment** (SureSelect_Human_All_Exon_V5 in the example below). iWhale **also** needs the gziped version (made by bgzip) of the file and the **.tbi** index done using with these parameters (you need *tabix* and *bgzip* commands):
+**You have to change it to the exome interval used by your sequencing experiment** (SureSelect_Human_All_Exon_V5 in the example below).
+
+```
+exomeRegions = "SureSelect_Human_All_Exon_V5.bed"
+```
+
+iWhale **also** needs the gziped version (made by bgzip) of the file and the **.tbi** index done using with these parameters (you need *tabix* and *bgzip* commands):
 
 ```
 bgzip -c SureSelect_Human_All_Exon_V5.bed > SureSelect_Human_All_Exon_V5.bed.gz
