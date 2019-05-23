@@ -61,7 +61,7 @@ tabix -p bed -S 3  SureSelect_Human_All_Exon_V5.bed.gz
 
 
 ### Annotation data download
-Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/iwhaleannotation.tar.gz). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
+Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) (27G). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
 
@@ -76,7 +76,15 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 - --name used to name the container. If you do not assign a container name with the --name option, then the daemon generates a random string name for you
 - -v used to share the two folders that iWhale needs: the **working directory** (used in the example the current directory by $(pwd)) and the **folder including the databases files** (in the example, /home/user/databases)   
 - iwhale is the name of the docker image to be run
-- **iwhalexp** is the name of the iWhale docker container while **iwhale** is the name of the image 
+- **iwhalexp** is the name of the iWhale docker container while **iwhale** is the name of the image
+
+
+You can download a [random sample](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) (107M) for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
+Just launch it from the *iwhale_example* directory with this command:
+
+```
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_direcotry:/annotations iwhale 
+```
 
 # Re-launching iWhale
 
