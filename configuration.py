@@ -54,6 +54,5 @@ varScanMinVarFreq = 0.02
 
 
 # Custom variant callers parameters
-mutectParameters = ""
 mutect2Parameters = ""
 varScanParameters = ""
