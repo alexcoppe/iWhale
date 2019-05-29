@@ -58,7 +58,11 @@ iWhale **also** needs the gziped version (made by bgzip) of the file and the **.
 bgzip -c SureSelect_Human_All_Exon_V5.bed > SureSelect_Human_All_Exon_V5.bed.gz
 tabix -p bed -S 3  SureSelect_Human_All_Exon_V5.bed.gz
 ```
-
+Every MuTect2 and VarScan2 parameters can be set by using the **configuration.py** file. For example:
+```
+mutect2Parameters = "--normal-lod 2.5 --native-pair-hmm-threads 6"
+varScanParameters = "--tumor-purity 2 --p-value 0.05"
+```
 
 ### Annotation data download
 Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) (27G). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
