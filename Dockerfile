@@ -22,13 +22,12 @@ ADD https://github.com/dkoboldt/varscan/releases/download/${varscan_version}/Var
 ADD https://raw.githubusercontent.com/alexcoppe/varscan_accessories/master/vs_format_converter.py /tmp/
 ADD https://downloads.sourceforge.net/project/snpeff/snpEff_v${snpeff_version}_core.zip /tmp/
 ADD https://raw.githubusercontent.com/alexcoppe/mutect-vcf-selector/master/mutect-vcf-selector.py /tmp/
+ADD https://raw.githubusercontent.com/alexcoppe/iWhale/master/iwhale.py /usr/bin/iwhale
+ADD https://raw.githubusercontent.com/alexcoppe/iWhale/master/SConstruct /tmp/
+ADD https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py /tmp/
+ADD https://raw.githubusercontent.com/alexcoppe/iWhale/master/Scons_variant_calling /tmp/
+ADD https://raw.githubusercontent.com/alexcoppe/iWhale/master/update_GT_Strelka2.py /usr/local/bin/
 
-
-COPY iwhale.py /usr/bin/iwhale
-COPY SConstruct /tmp/
-COPY configuration.py /tmp/
-COPY Scons_variant_calling /tmp/
-COPY update_GT_Strelka2.py /usr/local/bin
 
 RUN apt-get update \
     && chmod 755 /usr/local/bin/update_GT_Strelka2.py \
