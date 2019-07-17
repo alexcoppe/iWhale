@@ -1,4 +1,4 @@
-# :whale: iWhale
+# iWhale
 ### Dockerized Whole Exome Sequencing (WES) pipeline
 
 A pipeline for Whole Exome Sequencing (WES) variants identification in mathced tumor-normal samples. It runs into a [Docker](https://www.docker.com) container, ready to be downloaded and used on any operating system 
@@ -83,12 +83,26 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 - **iwhalexp** is the name of the iWhale docker container while **iwhale** is the name of the image
 
 
-You can download a [random sample](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) (107M) for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
-Just launch it from the *iwhale_example* directory with this command:
+# Testing the Docker image
+
+You can download a small [random sample](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) (107M) for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
+Then do the following steps:
+
+- Install **Docker Community Edition (CE)** in your computer. Instructions and downloading links are here: [macOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) and [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
+
+- Download and install the **iWhale images** with this command: 
+```
+docker pull alexcoppe/iwhale
+```
+- Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz)
+- Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** of the genome using **your credentials**
+
+- Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
 
 ```
-docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_direcotry:/annotations iwhale 
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory:/annotations iwhale 
 ```
+
 
 # Re-launching iWhale
 
