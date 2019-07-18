@@ -65,7 +65,7 @@ varScanParameters = "--tumor-purity 2 --p-value 0.05"
 ```
 
 ### Annotation data download
-Annotation data, except COSMIC files, can be downloaded from [compgen](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) (27G). The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
+Annotation data, except COSMIC files, can be downloaded as a  [tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or a [zip](http://compgen.bio.unipd.it/downloads/annotations.zip) one. Decompression takes a while. The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
 
@@ -85,7 +85,7 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 
 # Testing the Docker image
 
-You can download a small [random sample](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) (107M) for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
+You can download a small random sample (107M) in [tgz](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) format or as a [zip](http://compgen.bio.unipd.it/downloads/iwhale_example.zip) file for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
 Then do the following steps:
 
 - Install **Docker Community Edition (CE)** in your computer. Instructions and downloading links are here: [macOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) and [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
@@ -94,7 +94,7 @@ Then do the following steps:
 ```
 docker pull alexcoppe/iwhale
 ```
-- Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz)
+- Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip)
 - Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** of the genome using **your credentials**
 
 - Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
