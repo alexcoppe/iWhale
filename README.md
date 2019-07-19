@@ -73,7 +73,7 @@ Annotation data, except COSMIC files, can be downloaded as a  [tar.gz](http://co
 
 The docker's run command is used to mention that we want to create an instance of an image. The image is then called a container. This is the command to launch an iWhale container:
 ```
-docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/annotations iwhale 
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/annotations alexcoppe/iwhale
 ```
 - --rm removes the container (it is optional)
 - -it used for interactive processes (like a shell)
@@ -100,9 +100,15 @@ docker pull alexcoppe/iwhale
 - Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
 
 ```
-docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory:/annotations iwhale 
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory:/annotations alexcoppe/iwhale 
 ```
 
+Paths in Windows should be written differently. For example:
+
+```
+docker run --rm -it --name iwhalexp -v c:/Users:/working -v c:/Users/annotations:/annotations alexcoppe/iwhale 
+```
+Read [Get started with Docker for Windows](https://docs.docker.com/docker-for-windows/) for a tutorial on using Docker on Windows.
 
 # Re-launching iWhale
 
