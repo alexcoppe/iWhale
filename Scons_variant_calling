@@ -32,7 +32,7 @@ vars.Add('gatk4','The path to GATK4',"/tmp/gatk4/gatk")
 vars.Add('javaOptions','Options to run java',"4")
 vars.Add('maxPopulationAlleleFrequency',"Maximum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0.2")
 vars.Add('minPopulationAlleleFrequency',"Minimum population allele frequency of sites to consider for GetPileupSummaries in GATK4","0")
-vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","af-only-gnomad.raw.sites.b37.vcf.gz")
+vars.Add('gnomadVCF',"The gnomad.exomes.rx.x.x.sites.pass.vcf","gnomad.exomes.r2.0.2.sites.vcf.gz")
 vars.Add('variantCallers',"Variant callers to be used (mutect2,strelka2,varscan)","mutect2,strelka2,varscan")
 vars.Add('gatk3','The path to gatk3',"/tmp/gatk3/GenomeAnalysisTK.jar")
 
