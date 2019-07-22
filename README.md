@@ -68,6 +68,9 @@ varScanParameters = "--tumor-purity 2 --p-value 0.05"
 Annotation data, except COSMIC files, can be downloaded as a  [tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or a [zip](http://compgen.bio.unipd.it/downloads/annotations.zip) one. Decompression takes a while. The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
+- *CosmicCodingMuts.vcf.gz.tbi*
+
+**The *CosmicCodingMuts.vcf.gz.tbi* should be made by the user. See the Testing the Docker image** section to see how to make it.
 
 # Launching iWhale
 
@@ -95,7 +98,13 @@ Then do the following steps:
 docker pull alexcoppe/iwhale
 ```
 - Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip)
-- Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** of the genome using **your credentials**
+- Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** of the genome using **your credentials**. You need to create a **.tbi** file from the *CosmicCodingMuts.vcf.gz* with these commands (needed the [tabix](http://www.htslib.org/doc/tabix.html) and [bgzip](http://www.htslib.org/doc/bgzip.html) softwares from [Samtools](http://www.htslib.org/)):
+
+```
+gunzip CosmicCodingMuts.vcf.gz
+bgzip -c CosmicCodingMuts.vcf > CosmicCodingMuts.vcf.gz
+tabix -p vcf CosmicCodingMuts.vcf.gz
+```
 
 - Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
 
@@ -165,7 +174,7 @@ iWhale uses databases and sequences indicated in the table below. Many of these 
 |[gnomAD](https://gnomad.broadinstitute.org/)| The Genome Aggregation Database (gnomAD), developed by an international coalition of investigators, with the goal of aggregating and harmonizing both exome and genome sequencing data from a wide variety of large-scale sequencing projects |2018-05-22|
 |[SnpEff GRCh37](http://snpeff.sourceforge.net/index.html)| SnpEff annotation for the human genome reference genome GRCh37)| GRCh37 |
 |[ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)| ClinVar aggregates information about genomic variation and its relationship to human health |20190311|
-
+|[COSMIC](https://cancer.sanger.ac.uk/cosmic)|COSMIC, the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer|v89|
 
 # Getting database files and indexing by yourself
 
@@ -298,7 +307,7 @@ Their date portion could be different, if so, remember to put the right filename
 ```
 clinvar = "clinvar_20190311.vcf.gz"
 ```
-### Download of Cosmic data
+### Download of COSMIC data
 
 COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
@@ -306,5 +315,7 @@ COSMIC files, which are free only for academic researchers, can be downloaded fr
 
 Making the *.tbi* file:
 ```
+gunzip CosmicCodingMuts.vcf.gz
+bgzip -c CosmicCodingMuts.vcf > CosmicCodingMuts.vcf.gz
 tabix -p vcf CosmicCodingMuts.vcf.gz
 ```
