@@ -18,7 +18,7 @@ The first thing to do is to download iWhale from [Docker Hub](https://hub.docker
 docker pull alexcoppe/iWhale
 ```
 The working directory has to contain the following elements:
-- two directories for each sample (one for tumor and one for control sample) including the two fastq files
+- two directories for each sample (one for tumor and one for control sample) including the four fastq files
 - a text file called **tumor_control_samples.txt**
 - a python file called **configuration.py**
 
