@@ -8,14 +8,18 @@ All the steps of the pipeline and their dependencies are controlled by [SCons](h
 
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
 
+A **pdf manual** for iWhale is available [here](http://compgen.bio.unipd.it/downloads/iwhale.pdf)
+
 An image of the iWhale pipeline diagram is available [here](https://github.com/alexcoppe/iWhale/blob/master/iwhale.jpg?raw=true)
+
+![iWhale](https://raw.githubusercontent.com/alexcoppe/iWhale/master/iwhale.jpg)
 
 # iWhale data preparation
 
 The first thing to do is to download iWhale from [Docker Hub](https://hub.docker.com/):
 
 ```
-docker pull alexcoppe/iWhale
+docker pull alexcoppe/iwhale
 ```
 The working directory has to contain the following elements:
 - two directories for each sample (one for tumor and one for control sample) including the four fastq files
