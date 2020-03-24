@@ -186,51 +186,61 @@ All commands are launch from the directory containing the downloaded data. **Man
 
 ### Download and setting of reference genome
 
-The reference genome can be downloaded from [http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/) by using these commands:
+The reference genome can be downloaded from [ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/](ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/) by using these commands:
 
 ```
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr1.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr2.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr3.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr4.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr5.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr6.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr7.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr8.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr9.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr10.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr11.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr12.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr13.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr14.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr15.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr16.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr17.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr18.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr19.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr20.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr21.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr22.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrX.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrY.fa.gz
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chrM.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.1.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.2.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.3.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.4.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.5.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.6.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.7.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.8.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.9.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.10.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.11.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.12.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.13.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.14.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.15.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.16.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.17.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.18.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.19.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.20.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.21.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.22.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.X.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.Y.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.MT.fa.gz
 
 ```
+The reference genome of Epstein-Barr virus (EBV) is available in FASTA format from [https://www.ncbi.nlm.nih.gov/nuccore/AJ507799.2?report=fasta](https://www.ncbi.nlm.nih.gov/nuccore/AJ507799.2?report=fasta)
 
-Join all chromosomes into one big FASTA file with all human genome in it and remove **chr** from FASTA headers (like **>chr1** to **>1**)
-
-```
-zcat chr1.fa.gz chr2.fa.gz chr3.fa.gz chr4.fa.gz chr5.fa.gz chr6.fa.gz chr7.fa.gz chr8.fa.gz chr9.fa.gz \
-  chr10.fa.gz chr11.fa.gz chr12.fa.gz chr13.fa.gz chr14.fa.gz chr15.fa.gz chr16.fa.gz chr17.fa.gz \
-  chr18.fa.gz chr19.fa.gz chr20.fa.gz chr21.fa.gz chr22.fa.gz chrX.fa.gz chrY.fa.gz chrM.fa.gz  |  sed 's/>chr/>/' > reference.fa
-
-```
-Then you can remove chromosome files with this command
-
-```
-rm chr*.fa.gz
+Compress EBV reference genome into a .gz file
 ```
 
+gzip EBV_reference_genome.fa
+```
+Join all chromosomes into one big FASTA file with all human genome in it from FASTA headers
+
+```
+zcat Homo_sapiens.GRCh38.dna_sm.chromosome.1.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.2.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.3.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.4.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.5.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.6.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.7.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.8.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.9.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.10.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.11.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.12.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.13.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.14.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.15.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.16.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.17.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.18.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.19.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.20.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.21.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.22.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.X.fa.gz Homo_sapiens.GRCh38.dna_sm.chromosome.Y.fa.gz \
+Homo_sapiens.GRCh38.dna_sm.chromosome.MT.fa.gz EBV_reference_genome.fa.gz > reference.fa
+
+```
 ### BWA indexing of Human genome.
 
 It produces many files:
@@ -274,19 +284,29 @@ wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_20180
 
 ```
 gunzip All_20180418.vcf.gz
-cat All_20180418.vcf | sed 's/>chr/>/' | bgzip -c >  All_20180418.vcf.gz
+cat All_20180418.vcf | sed 's/>chr/>/' > All_20180418_nochr.vcf
+```
+### Removing AA field in INFO from dbSNP file with SnpSift
+The new version of dbSNP included AA field in INFO with special characters not allowed in VCF files
+
+```
+java -jar SnpSift.jar rmInfo All_20180418_nochr.vcf AA > All_20180418_noAA.vcf
+mv All_20180418_noAA.vcf All_20180418.vcf.gz
 ```
 
-### Indexing dbSNP VCF with tabix.
+### Compressing and indexing dbSNP VCF with bgzip and tabix.
 
-Need to install tabix in your computer.
+Need to install bgzip and tabix in your computer.
 Produced file:
+ 
+ - All_20180418.vcf.gz
  - All_20180418.vcf.gz.tbi
  
  This step takes a lot of time
  
 ```
-tabix -fp vcf  All_20180418.vcf.gz
+bgzip -c >  All_20180418.vcf.gz
+tabix -fp vcf All_20180418.vcf.gz
 ```
 
 ### Download of gnomAD data
@@ -301,15 +321,15 @@ The **gnomad.exomes.r2.0.2.sites.vcf.gz** is compressed by *bgzip* and indexed b
 
 ### Download of ClinVar data
 
-Download of ClinVar data from [ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/](ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/).
+Download of ClinVar data from [https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/).
 Obtained files:
- - clinvar_20190311.vcf.gz
- - clinvar_20190311.vcf.gz.tbi 
+ - clinvar.vcf.gz
+ - clinvar.vcf.gz.tbi 
  
 Their date portion could be different, if so, remember to put the right filename in the configuration.py file:
 
 ```
-clinvar = "clinvar_20190311.vcf.gz"
+clinvar = "clinvar.vcf.gz"
 ```
 ### Download of COSMIC data
 
@@ -320,6 +340,8 @@ COSMIC files, which are free only for academic researchers, can be downloaded fr
 Making the *.tbi* file:
 ```
 gunzip CosmicCodingMuts.vcf.gz
+java -jar SnpSift.jar rmInfo CosmicCodingMuts.vcf AA > CosmicCodingMuts_noAA.vcf
+mv CosmicCodingMuts_noAA.vcf CosmicCodingMuts.vcf
 bgzip -c CosmicCodingMuts.vcf > CosmicCodingMuts.vcf.gz
 tabix -p vcf CosmicCodingMuts.vcf.gz
 ```
