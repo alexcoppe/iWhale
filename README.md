@@ -8,21 +8,25 @@ All the steps of the pipeline and their dependencies are controlled by [SCons](h
 
 Three variant calling softwares are used by the pipeline: [Mutect2](https://software.broadinstitute.org/gatk/gatk4) , [VarScan2](http://dkoboldt.github.io/varscan/), and [Strelka2](https://github.com/Illumina/strelka) and the user is allowed to choose which to use and change their default settings.
 
+It runs on both genomes versions: **GRCh37** and **GRCh38** (beta version).
+
 A **pdf manual** for iWhale is available [here](http://compgen.bio.unipd.it/downloads/iwhale.pdf)
 
 An image of the iWhale pipeline diagram is available [here](https://github.com/alexcoppe/iWhale/blob/master/iwhale.jpg?raw=true)
 
 ![iWhale](https://raw.githubusercontent.com/alexcoppe/iWhale/master/iwhale.jpg)
 
+
+
 # iWhale data preparation
 
-The first thing to do is to download iWhale from [Docker Hub](https://hub.docker.com/):
+Download iWhale from [Docker Hub](https://hub.docker.com/):
 
 ```
 docker pull alexcoppe/iwhale
 ```
-The working directory has to contain the following elements:
-- two directories for each sample (one for tumor and one for control sample) including the four fastq files
+The working directory **must** contain the following elements:
+- two directories for each sample: one for **tumor** and the other one for **control** samples. Each directory **must** include **two** fastq files 
 - a text file called **tumor_control_samples.txt**
 - a python file called **configuration.py**
 
@@ -34,7 +38,7 @@ Each sample must be in its own directory containing the two paired-end gz-compre
 - **2.fastq.gz** 
 
 ### tumor_control_samples.txt file structure
-The file **tumor_control_samples.txt** is a simple text file organized by two columns separated by tab: in the first column there are tumor directories names and in the second one the matched control directories names 
+The file **tumor_control_samples.txt** is a simple text file organized by two columns **separated by tab**: in the first column there are **tumor directories names** and in the second one the **matched control directories names** 
 
 ```
 tumor_sample1 control_sample1
@@ -44,7 +48,7 @@ tumor_sample2 control_sample2
 
 ### configuration.py file structure
 The **configuration.py** file is essential. It is used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py).
-**A very important parameter and the only one you have to specify is the exome regions in bed format** by using the *exomeRegions* parameter. The default parameter is:
+**A very important parameter and the only one you must have to specify is the exome regions in bed format** by using the *exomeRegions* parameter. The default parameter is:
 
 ```
 exomeRegions = "exome_regions.bed"
@@ -69,11 +73,30 @@ varScanParameters = "--tumor-purity 2 --p-value 0.05"
 ```
 
 ### Annotation data download
-Annotation data, except COSMIC files, can be downloaded as a  [tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or a [zip](http://compgen.bio.unipd.it/downloads/annotations.zip) one. Decompression takes a while. The version of used databases are listed below ("Databases currently used" section). COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
+Annotation data, except COSMIC files, can be downloaded from compgen.bio.unipd.it.
+
+##### GRCh37 genome
+
+For the GRCh37 genome this are the links:
+
+- Tar.gz version: [http://compgen.bio.unipd.it/downloads/annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz)
+- Zip version: [http://compgen.bio.unipd.it/downloads/annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip)
+
+##### GRCh38 genome (Beta Version)
+
+For the GRCh38 genome this are the links:
+- Tar.gz version: [http://compgen.bio.unipd.it/downloads/annotations_GRCh38.tar.gz](http://compgen.bio.unipd.it/downloads/annotations_GRCh38.tar.gz)
+
+Decompression takes a while. The version of used databases are listed below ("Databases currently used" section).
+
+##### COSMIC annotation files
+
+COSMIC files, which are free only for academic researchers, can be downloaded from [https://cancer.sanger.ac.uk/cosmic/download](https://cancer.sanger.ac.uk/cosmic/download) after sign up and login. The needed files are:
 - *CosmicCodingMuts.vcf.gz*
 - *cancer_gene_census.csv*
 - *CosmicCodingMuts.vcf.gz.tbi*
 
+**Download the right version (GRCh38 or GRCh37) based on the data you are using
 **The *CosmicCodingMuts.vcf.gz.tbi* should be made by the user. See the Testing the Docker image** section to see how to make it.
 
 # Launching iWhale
@@ -95,14 +118,15 @@ docker run --rm -it --name iwhalexp -v $(pwd):/working -v /home/user/databases:/
 You can download a small random sample (107M) in [tgz](http://compgen.bio.unipd.it/downloads/iwhale_example.tgz) format or as a [zip](http://compgen.bio.unipd.it/downloads/iwhale_example.zip) file for a fast testing of iWhale. It contains 1 simulated small tumor (*tumor_sample*) and 1 control sample (*control_sample*), a *configuration.py* file and a *tumor_control_samples.txt* files ready.
 Then do the following steps:
 
-- Install **Docker Community Edition (CE)** in your computer. Instructions and downloading links are here: [macOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) and [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
+1) Install **Docker Community Edition (CE)** in your computer. Instructions and downloading links are here: [macOS](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) and [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) 
 
-- Download and install the **iWhale images** with this command: 
+2) Download and install the **iWhale images** with this command: 
 ```
 docker pull alexcoppe/iwhale
 ```
-- Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip)
-- Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** of the genome using **your credentials**. You need to create a **.tbi** file from the *CosmicCodingMuts.vcf.gz* with these commands (needed the [tabix](http://www.htslib.org/doc/tabix.html) and [bgzip](http://www.htslib.org/doc/bgzip.html) softwares from [Samtools](http://www.htslib.org/)):
+3) Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip) for GRCh37 or [annotations_GRCh38.tar.gz](http://compgen.bio.unipd.it/downloads/annotations_GRCh38.tar.gz)
+
+4) Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** or **version 38** of the genome using **your credentials**. You need to create a **.tbi** file from the *CosmicCodingMuts.vcf.gz* with these commands (needed the [tabix](http://www.htslib.org/doc/tabix.html) and [bgzip](http://www.htslib.org/doc/bgzip.html) softwares from [Samtools](http://www.htslib.org/)):
 
 ```
 gunzip CosmicCodingMuts.vcf.gz
@@ -110,11 +134,21 @@ bgzip -c CosmicCodingMuts.vcf > CosmicCodingMuts.vcf.gz
 tabix -p vcf CosmicCodingMuts.vcf.gz
 ```
 
-- Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
+5) Finally launch iWhale from the *iwhale_example* directory with a command similar to the following one. Just remember that the path indicated in the command, */path_to_user_annotations_directory*, should be changed to the **real path** were you decompressed the **annotations.tar.gz** file, for example */home/user/annotations*:
+
+Version **GRCh37**:
+```
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory_v37:/annotations alexcoppe/iwhale 
+```
+
+Version **GRCh38**:
+
+**Download the [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py) file which is required to run the GRCh38, put it in the analyses directory and run:**
 
 ```
-docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory:/annotations alexcoppe/iwhale 
+docker run --rm -it --name iwhalexp -v $(pwd):/working -v /path_to_user_annotations_directory_38:/annotations alexcoppe/iwhale 
 ```
+
 
 Paths in Windows should be written differently. For example:
 
@@ -169,7 +203,9 @@ The *Variants* directory contains the intermediate files produced by the pipelin
 
 # Databases currently used
 
-iWhale uses databases and sequences indicated in the table below. Many of these sequence files should be indexed. We provide a bash script that do all the steps, from download to index.
+iWhale uses databases and sequences indicated in the table below.
+
+## GRCh37
 
 | Sequences or Databases | Description| Version |
 | ------------- |:-------------| :-------------| 
@@ -180,7 +216,18 @@ iWhale uses databases and sequences indicated in the table below. Many of these 
 |[ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)| ClinVar aggregates information about genomic variation and its relationship to human health |20190311|
 |[COSMIC](https://cancer.sanger.ac.uk/cosmic)|COSMIC, the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer|v89|
 
-# Getting database files and indexing by yourself
+## GRCh38
+
+| Sequences or Databases | Description| Version |
+| ------------- |:-------------| :-------------| 
+| [Human genome database](ftp://ftp.ensembl.org/pub/release-99/fasta/homo_sapiens/dna/) | GRCh38 version of the human genome |  hg19 or GRCh37|
+|[dbSNP](https://www.ncbi.nlm.nih.gov/snp)| dbSNP contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions | All_20180418.vcf.gz|
+|[gnomAD](https://gnomad.broadinstitute.org/)| The Genome Aggregation Database (gnomAD), developed by an international coalition of investigators, with the goal of aggregating and harmonizing both exome and genome sequencing data from a wide variety of large-scale sequencing projects |2.1|
+|[SnpEff GRCh38](http://snpeff.sourceforge.net/index.html)| SnpEff annotation for the human genome reference genome GRCh38)| GGRCh38.86 |
+|[ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)| ClinVar aggregates information about genomic variation and its relationship to human health |20200316|
+|[COSMIC](https://cancer.sanger.ac.uk/cosmic)|COSMIC, the Catalogue Of Somatic Mutations In Cancer, is the world's largest and most comprehensive resource for exploring the impact of somatic mutations in human cancer|v90|
+
+# Getting database files and indexing by yourself (only for the braves)
 
 All commands are launch from the directory containing the downloaded data. **Many of the command take a LOT OF TIME to conclude**.
 
