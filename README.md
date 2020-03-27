@@ -48,7 +48,10 @@ tumor_sample2 control_sample2
 
 ### configuration.py file structure
 The **configuration.py** file is essential. It is used to set parameters of the tools used by iWhale. All the possible parameters that you can set are gathered and explained in this file: [configuration.py](https://raw.githubusercontent.com/alexcoppe/iWhale/master/configuration.py).
-**A very important parameter and the only one you must have to specify is the exome regions in bed format** by using the *exomeRegions* parameter. The default parameter is:
+
+**The configuration.py file is set for GRCh38** genome analyses.
+
+For GRCh37 you can use a configuration.py file with only e parameter set (*exomeRegions*): **the exome regions in bed format, which is a very important parameter (the only one you must have to specify for GRCh37 version of the genome)**. To do it use the *exomeRegions* parameter which default value is:
 
 ```
 exomeRegions = "exome_regions.bed"
@@ -124,7 +127,7 @@ Then do the following steps:
 ```
 docker pull alexcoppe/iwhale
 ```
-3) Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip) for GRCh37 or [annotations_GRCh38.tar.gz](http://compgen.bio.unipd.it/downloads/annotations_GRCh38.tar.gz)
+3) Download and decompress [annotations.tar.gz](http://compgen.bio.unipd.it/downloads/annotations.tar.gz) or [annotations.zip](http://compgen.bio.unipd.it/downloads/annotations.zip) for GRCh37 or [annotations_GRCh38.tar.gz](http://compgen.bio.unipd.it/downloads/annotations_GRCh38.tar.gz) for GRCh38
 
 4) Download the *CosmicCodingMuts.vcf.gz* and *cancer_gene_census.csv* files from [COSMIC](https://cancer.sanger.ac.uk/cosmic/download)  **version 37** or **version 38** of the genome using **your credentials**. You need to create a **.tbi** file from the *CosmicCodingMuts.vcf.gz* with these commands (needed the [tabix](http://www.htslib.org/doc/tabix.html) and [bgzip](http://www.htslib.org/doc/bgzip.html) softwares from [Samtools](http://www.htslib.org/)):
 
