@@ -2,26 +2,26 @@
 variantCallers = "mutect2,strelka2,varscan"
 
 # Computational resources
-processors = 3
+processors = 4
 
 # Human reference
-reference = "reference.fa"
+reference = "GRCh38.fa"
 
 # Cosmic database in VCF format
-cosmic = "CosmicCodingMuts_v82.vcf"
+cosmic = "CosmicCodingMuts.vcf.gz"
 
 # dbSNP database in VCF format
 #dbsnpVCF = "dbSNP_v150_20170710_noCHR.vcf.gz"
 dbsnpVCF = "All_20180418.vcf.gz"
 
 # ClinVar in VCF compressed format
-clinvar = "clinvar_20190311.vcf.gz"
+clinvar = "clinvar_20200316.vcf.gz"
 
 # Exome regions in bed format
 exomeRegions = "exome_regions.bed"
 
 # Genome aggregation database gnomAD in VCF format
-gnomadVCF = "af-only-gnomad.raw.sites.b37.vcf.gz"
+gnomadVCF = "gnomad.exomes.r2.1.sites.grch38.vcf.gz"
 
 # Computation of predicted contamination in tumor samples by CalculateContamination from GATK4 (y/n)
 contamination = "y"
@@ -36,7 +36,7 @@ javaOptions = 4
 # snpeff directory location
 snpeffDir = "/annotations"
 # snpeff Genome Version
-snpeffGenomeVersion = "GRCh37.75"
+snpeffGenomeVersion = "GRCh38.86"
 
 
 #### MuTect2 parameters ##############
@@ -52,7 +52,3 @@ varScanPvalue = 0.05
 varScanMinVarFreq = 0.02
 
 
-
-# Custom variant callers parameters
-mutect2Parameters = ""
-varScanParameters = ""
