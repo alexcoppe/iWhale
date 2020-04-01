@@ -341,7 +341,7 @@ The new version of dbSNP included AA field in INFO with special characters not a
 
 ```
 java -jar SnpSift.jar rmInfo All_20180418_nochr.vcf AA > All_20180418_noAA.vcf
-mv All_20180418_noAA.vcf All_20180418.vcf.gz
+mv All_20180418_noAA.vcf All_20180418.vcf
 ```
 
 ### Compressing and indexing dbSNP VCF with bgzip and tabix.
@@ -355,7 +355,7 @@ Produced file:
  This step takes a lot of time
  
 ```
-bgzip -c >  All_20180418.vcf.gz
+bgzip -c All_20180418.vcf >  All_20180418.vcf.gz
 tabix -fp vcf All_20180418.vcf.gz
 ```
 
