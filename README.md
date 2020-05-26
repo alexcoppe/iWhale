@@ -16,9 +16,12 @@ An image of the iWhale pipeline diagram is available [here](https://github.com/a
 
 ![iWhale](https://raw.githubusercontent.com/alexcoppe/iWhale/master/iwhale.jpg)
 
+### How to cite iWhale? :blue_book:
 
-
-# iWhale data preparation
+   Binatti A, Bresolin S, Bortoluzzi S, Coppe A.
+   [iWhale: A Computational Pipeline Based on Docker and SCons for Detection and Annotation of Somatic Variants in Cancer WES](https://pubmed.ncbi.nlm.nih.gov/32321919/). *Briefings in Bioinformics*. 2020 May 20:bbaa065. doi: 10.1093/bib/bbaa065.
+ 
+ # iWhale data preparation
 
 Download iWhale from [Docker Hub](https://hub.docker.com/):
 
